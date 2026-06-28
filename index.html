@@ -1,2396 +1,335 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zenzei OS - Celestial Workspace</title>
-  <!-- SEO Metadata -->
-  <meta name="description" content="Zenzei OS - A sleek, space-themed, web-based operating system featuring interactive apps, simulated OS metrics, and glassmorphic aesthetics.">
-  <!-- Fonts -->
-  <title>Zenzei OS - Space Workspace</title>
-  
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-  <!-- FontAwesome Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Zenzei OS — A space-themed web desktop with glassmorphic aesthetics and interactive apps." />
+  <title>Zenzei OS — Celestial Workspace</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
   <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css">
-  <style>
-    /* Styling settings & variables */
-    :root {
-      --bg-dark: #05050b;
-      --bg-panel: rgba(10, 10, 22, 0.65);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --active-glow: rgba(0, 243, 255, 0.35);
-      
-      --cyan: #00f3ff;
-      --pink: #ff007f;
-      --purple: #bd00ff;
-      --violet: #a985ff;
-      --green: #2ecc71;
-      --orange: #ff7f50;
-      --gold: #ffc107;
-      --text-white: #f5f6fa;
-      --text-dim: rgba(245, 246, 250, 0.7);
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      color: var(--text-white);
-      background-color: var(--bg-dark);
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      position: relative;
-    }
-    /* Background Space Elements */
-    #starfield {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-      pointer-events: none;
-    }
-    #nebula {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-      background: radial-gradient(circle at 80% 20%, rgba(72, 20, 139, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 20% 80%, rgba(112, 16, 163, 0.15) 0%, transparent 60%);
-      transition: background 2s ease;
-    }
-    /* Custom scrollbars */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.15);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--cyan);
-    }
-    /* Utility classes */
-    .hidden { display: none !important; }
-    .text-green { color: var(--green); }
-    .text-cyan { color: var(--cyan); }
-    .text-violet { color: var(--violet); }
-    .text-pink { color: var(--pink); }
-    .text-orange { color: var(--orange); }
-    .text-gold { color: var(--gold); }
-    /* Interactive button styles */
-    .btn-action {
-      background: linear-gradient(135deg, #48148b 0%, #0d6efd 100%);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
-      padding: 10px 24px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.9rem;
-      border-radius: 30px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
-      transition: all 0.3s ease;
-    }
-    .btn-action:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 243, 255, 0.5);
-      border-color: var(--cyan);
-    }
-    /* System Boot Screen */
-    .overlay-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background-color: #030307;
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    .boot-logo {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      box-shadow: 0 0 40px rgba(112, 16, 163, 0.6);
-      animation: logo-glow 3s infinite alternate ease-in-out;
-    }
-    .boot-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2.2rem;
-      letter-spacing: 6px;
-      margin-top: 20px;
-      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-    }
-    .boot-title span { color: var(--cyan); }
-    .progress-track {
-      width: 280px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 2px;
-      overflow: hidden;
-      margin: 25px 0 15px 0;
-    }
-    .progress-fill {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #0d6efd, var(--cyan));
-      box-shadow: 0 0 10px var(--cyan);
-      transition: width 0.1s ease;
-    }
-    .status-text {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-    }
-    @keyframes logo-glow {
-      0% { transform: scale(1); box-shadow: 0 0 30px rgba(112, 16, 163, 0.4); }
-      100% { transform: scale(1.03); box-shadow: 0 0 60px rgba(0, 243, 255, 0.7); }
-    }
-    /* Lock Screen Layout */
-    #lock-screen {
-      background: radial-gradient(circle at center, rgba(13, 13, 30, 0.85) 0%, #030307 100%);
-      backdrop-filter: blur(15px);
-    }
-    .clock-display {
-      text-align: center;
-      margin-bottom: 50px;
-    }
-    .time-val {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 5.5rem;
-      font-weight: 900;
-      text-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
-    }
-    .date-val {
-      font-size: 1.1rem;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      margin-top: 8px;
-      color: var(--text-dim);
-    }
-    .login-box {
-      background: rgba(10, 10, 22, 0.6);
-      border: 1px solid var(--border-color);
-      padding: 40px;
-      border-radius: 20px;
-      width: 320px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    }
-    .user-img {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      padding: 3px;
-      background: linear-gradient(135deg, var(--cyan), var(--purple));
-      margin-bottom: 18px;
-    }
-    .user-img img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    .user-title {
-      font-weight: 600;
-      font-size: 1.1rem;
-      margin-bottom: 25px;
-    }
-    /* Desktop Area */
-    #desktop {
-      width: 100%;
-      height: calc(100vh - 48px);
-      position: relative;
-    }
-    .desktop-grid {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      display: grid;
-      grid-auto-flow: row;
-      grid-template-rows: repeat(auto-fill, 100px);
-      gap: 15px;
-      width: 120px;
-      height: 100%;
-      z-index: 10;
-    }
-    .desktop-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100px;
-      height: 100px;
-      border-radius: 12px;
-      cursor: pointer;
-      text-align: center;
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
-    }
-    .desktop-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-    .icon-box {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: white;
-      margin-bottom: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s ease;
-    }
-    .desktop-item:hover .icon-box {
-      transform: scale(1.1) translateY(-2px);
-    }
-    /* App-specific color themes for shortcuts */
-    .icon-terminal { background: linear-gradient(135deg, #111, #333); border: 1px solid rgba(0, 243, 255, 0.3); }
-    .icon-notes { background: linear-gradient(135deg, #48148b, #6f42c1); border: 1px solid rgba(169, 133, 255, 0.3); }
-    .icon-asteroids { background: linear-gradient(135deg, #5b1414, #fd7e14); border: 1px solid rgba(253, 126, 20, 0.3); }
-    .icon-draw { background: linear-gradient(135deg, #7010a3, var(--pink)); border: 1px solid rgba(255, 0, 127, 0.3); }
-    .icon-explorer { background: linear-gradient(135deg, #0f5132, var(--green)); border: 1px solid rgba(46, 204, 113, 0.3); }
-    .icon-settings { background: linear-gradient(135deg, #444, var(--gold)); border: 1px solid rgba(255, 193, 7, 0.3); }
-    .desktop-item:hover .icon-terminal { box-shadow: 0 0 15px rgba(0, 243, 255, 0.6); }
-    .desktop-item:hover .icon-notes { box-shadow: 0 0 15px rgba(169, 133, 255, 0.6); }
-    .desktop-item:hover .icon-asteroids { box-shadow: 0 0 15px rgba(253, 126, 20, 0.6); }
-    .desktop-item:hover .icon-draw { box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); }
-    .desktop-item:hover .icon-explorer { box-shadow: 0 0 15px rgba(46, 204, 113, 0.6); }
-    .desktop-item:hover .icon-settings { box-shadow: 0 0 15px rgba(255, 193, 7, 0.6); }
-    .item-label {
-      font-size: 0.75rem;
-      font-weight: 500;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-      max-width: 95px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    /* Window System Styles */
-    #window-container {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-    }
-    .window {
-      position: absolute;
-      min-width: 320px;
-      min-height: 240px;
-      background: var(--bg-panel);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      pointer-events: auto;
-      transition: opacity 0.15s ease-out, transform 0.15s ease-out;
-    }
-    .window.active-window {
-      border-color: var(--active-glow);
-      box-shadow: 0 12px 40px rgba(0, 243, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.5);
-    }
-    .window.minimized {
-      opacity: 0;
-      transform: scale(0.8) translateY(100px);
-      pointer-events: none;
-    }
-    .window.maximized {
-      top: 0 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: calc(100vh - 48px) !important;
-      border-radius: 0;
-      border: none;
-    }
-    .window-header {
-      height: 38px;
-      background: rgba(255, 255, 255, 0.03);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: move;
-    }
-    .window-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: var(--text-dim);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .active-window .window-title {
-      color: var(--text-white);
-      text-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
-    }
-    .window-buttons {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn-win {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 7px;
-      color: transparent;
-      transition: all 0.2s ease;
-    }
-    .btn-win:hover { color: rgba(0, 0, 0, 0.6); }
-    .btn-win-min { background-color: #ffbd2e; }
-    .btn-win-max { background-color: #27c93f; }
-    .btn-win-close { background-color: #ff5f56; }
-    .btn-win-min::before { content: "\f068"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
-    .btn-win-max::before { content: "\f065"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
-    .window.maximized .btn-win-max::before { content: "\f066"; }
-    .btn-win-close::before { content: "\f00d"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
-    .window-body {
-      flex: 1;
-      position: relative;
-      overflow: auto;
-      background: rgba(4, 4, 8, 0.3);
-    }
-    .window-resizer {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      right: 0;
-      bottom: 0;
-      cursor: se-resize;
-      z-index: 101;
-    }
-    /* --- Apps Styles --- */
-    /* Terminal App */
-    .terminal-box {
-      background-color: #030307;
-      font-family: 'Fira Code', monospace;
-      color: #39ff14;
-      padding: 16px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      overflow: auto;
-      font-size: 0.85rem;
-      line-height: 1.4;
-    }
-    .terminal-output {
-      flex: 1;
-      overflow-y: auto;
-      margin-bottom: 8px;
-    }
-    .terminal-line {
-      white-space: pre-wrap;
-      margin-bottom: 4px;
-    }
-    .terminal-input-row {
-      display: flex;
-      align-items: center;
-    }
-    .terminal-prompt {
-      color: var(--cyan);
-      margin-right: 8px;
-    }
-    .terminal-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #39ff14;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.85rem;
-      caret-color: var(--cyan);
-    }
-    /* Notes App */
-    .notes-box {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      background: #090911;
-    }
-    .notes-header {
-      height: 40px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      justify-content: space-between;
-      background: rgba(255, 255, 255, 0.01);
-    }
-    .notes-status {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-    }
-    .btn-save-note {
-      background: rgba(0, 243, 255, 0.15);
-      border: 1px solid rgba(0, 243, 255, 0.3);
-      color: var(--cyan);
-      padding: 4px 12px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .btn-save-note:hover {
-      background: rgba(0, 243, 255, 0.3);
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-    }
-    .notes-text {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      padding: 16px;
-      color: var(--text-white);
-      font-family: inherit;
-      font-size: 0.9rem;
-      line-height: 1.5;
-      resize: none;
-    }
-    /* Asteroids Game */
-    .game-box {
-      background: #020205;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .game-canvas {
-      background: radial-gradient(circle at center, #070712 0%, #000000 100%);
-      display: block;
-      border-radius: 6px;
-    }
-    .game-hud {
-      position: absolute;
-      top: 15px;
-      width: calc(100% - 30px);
-      display: flex;
-      justify-content: space-between;
-      padding: 0 10px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.9rem;
-      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-      pointer-events: none;
-    }
-    .game-menu {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      z-index: 10;
-    }
-    .game-title {
-      font-family: 'Orbitron', sans-serif;
-      color: var(--cyan);
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-      text-shadow: 0 0 15px var(--cyan);
-    }
-    .game-desc {
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      margin-bottom: 25px;
-      line-height: 1.6;
-    }
-    /* Paint App */
-    .paint-box {
-      display: flex;
-      height: 100%;
-      background: #090911;
-    }
-    .paint-toolbar {
-      width: 70px;
-      border-right: 1px solid rgba(255, 255, 255, 0.05);
-      background: rgba(0, 0, 0, 0.2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 15px 0;
-      gap: 20px;
-    }
-    .paint-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      width: 100%;
-    }
-    .paint-color {
-      -webkit-appearance: none;
-      border: none;
-      background: none;
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-    }
-    .paint-color::-webkit-color-swatch {
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-    }
-    .paint-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-dim);
-      background: rgba(255, 255, 255, 0.02);
-      transition: all 0.2s ease;
-    }
-    .paint-btn.active {
-      background: var(--pink);
-      color: white;
-      border-color: var(--pink);
-      box-shadow: 0 0 10px var(--pink);
-    }
-    .paint-slider {
-      writing-mode: vertical-lr;
-      direction: rtl;
-      height: 80px;
-      width: 8px;
-      margin: 10px 0;
-      accent-color: var(--pink);
-      cursor: pointer;
-    }
-    .paint-btn-action:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: white;
-    }
-    .paint-btn-clear:hover { background: #dc3545; color: white; box-shadow: 0 0 10px rgba(220, 53, 69, 0.5); }
-    .paint-btn-save:hover { background: var(--cyan); color: #000; box-shadow: 0 0 10px var(--cyan); }
-    
-    .paint-workspace {
-      flex: 1;
-      position: relative;
-      background: #020205;
-    }
-    .paint-canvas {
-      display: block;
-      cursor: crosshair;
-    }
-    /* Settings App */
-    .settings-box {
-      padding: 20px;
-      background: #090911;
-      height: 100%;
-      overflow-y: auto;
-    }
-    .settings-section {
-      margin-bottom: 25px;
-    }
-    .settings-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.95rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 6px;
-      margin-bottom: 15px;
-      letter-spacing: 1px;
-      color: var(--cyan);
-    }
-    .settings-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      font-size: 0.85rem;
-    }
-    .wallpapers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .wallpaper-thumb {
-      height: 70px;
-      border-radius: 8px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      overflow: hidden;
-      position: relative;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      transition: all 0.2s ease;
-    }
-    .wallpaper-thumb.active {
-      border-color: var(--cyan);
-      box-shadow: 0 0 10px var(--cyan);
-    }
-    .wallpaper-thumb span {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.75);
-      font-size: 0.7rem;
-      padding: 4px;
-      text-align: center;
-    }
-    /* Switch toggle styles */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 22px;
-    }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .switch-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(255, 255, 255, 0.1);
-      transition: 0.4s;
-      border-radius: 22px;
-    }
-    .switch-slider:before {
-      position: absolute;
-      content: "";
-      height: 14px; width: 14px;
-      left: 4px; bottom: 4px;
-      background-color: white;
-      transition: 0.4s;
-      border-radius: 50%;
-    }
-    input:checked + .switch-slider { background-color: var(--cyan); }
-    input:checked + .switch-slider:before { transform: translateX(22px); }
-    /* Explorer App */
-    .explorer-box {
-      display: flex;
-      height: 100%;
-      background: #06060c;
-    }
-    .explorer-sidebar {
-      width: 130px;
-      border-right: 1px solid rgba(255, 255, 255, 0.05);
-      background: rgba(0, 0, 0, 0.2);
-      display: flex;
-      flex-direction: column;
-      padding: 10px 0;
-    }
-    .explorer-item {
-      padding: 10px 15px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      color: var(--text-dim);
-      border-left: 3px solid transparent;
-      transition: all 0.2s ease;
-    }
-    .explorer-item:hover {
-      background: rgba(255, 255, 255, 0.02);
-      color: var(--text-white);
-    }
-    .explorer-item.active {
-      color: var(--cyan);
-      border-left-color: var(--cyan);
-      background: rgba(0, 243, 255, 0.03);
-    }
-    .explorer-content {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-    .explorer-hero {
-      width: 100%;
-      height: 160px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    }
-    .explorer-hero-title {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 900;
-      letter-spacing: 4px;
-      font-size: 1.5rem;
-      text-transform: uppercase;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-    }
-    .explorer-title-text {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.3rem;
-      text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-    }
-    .explorer-desc {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-      line-height: 1.6;
-    }
-    .explorer-specs {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-      margin-top: 10px;
-    }
-    .explorer-specs td {
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .explorer-specs td:first-child {
-      color: var(--cyan);
-      width: 40%;
-    }
-    /* Taskbar */
-    #taskbar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100vw;
-      height: 48px;
-      background: var(--bg-panel);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
-      z-index: 1000;
-    }
-    #start-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: all 0.2s ease;
-    }
-    #start-btn:hover {
-      background: rgba(0, 243, 255, 0.15);
-      border-color: var(--cyan);
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-    }
-    .start-logo {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-    }
-    .start-text {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 700;
-      font-size: 0.75rem;
-      letter-spacing: 1px;
-    }
-    #taskbar-apps {
-      flex: 1;
-      margin: 0 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      height: 100%;
-      overflow-x: auto;
-    }
-    .taskbar-pin {
-      height: 36px;
-      padding: 0 12px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      transition: all 0.2s ease;
-      min-width: 100px;
-      max-width: 150px;
-    }
-    .taskbar-pin:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-white);
-    }
-    .taskbar-pin.active {
-      background: rgba(0, 243, 255, 0.1);
-      border-color: rgba(0, 243, 255, 0.3);
-      color: white;
-      box-shadow: inset 0 -2px 0 var(--cyan);
-    }
-    .system-tray {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-    }
-    .tray-icon {
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .tray-icon:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text-white);
-    }
-    .tray-clock {
-      font-family: 'Orbitron', sans-serif;
-      color: var(--text-white);
-      font-weight: 500;
-      padding: 4px;
-    }
-    /* Start Menu Panel */
-    #start-menu {
-      position: absolute;
-      bottom: 58px;
-      left: 12px;
-      width: 540px;
-      height: 400px;
-      background: var(--bg-panel);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      display: flex;
-      overflow: hidden;
-      z-index: 999;
-      animation: menu-slide 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
-    }
-    @keyframes menu-slide {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    .start-sidebar {
-      width: 180px;
-      background: rgba(0, 0, 0, 0.25);
-      border-right: 1px solid rgba(255, 255, 255, 0.03);
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-    }
-    .start-user {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: auto;
-      text-align: center;
-    }
-    .start-avatar {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 10px;
-    }
-    .start-name { font-weight: 600; font-size: 0.85rem; }
-    .start-status {
-      font-size: 0.65rem;
-      color: var(--text-dim);
-      margin-top: 3px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .start-links {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    .start-link-item {
-      background: transparent;
-      border: none;
-      color: var(--text-dim);
-      text-align: left;
-      padding: 8px 12px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-    }
-    .start-link-item:hover {
-      background: rgba(255, 255, 255, 0.03);
-      color: white;
-    }
-    .start-actions {
-      display: flex;
-      justify-content: space-around;
-      width: 100%;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 15px;
-    }
-    .btn-power {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      color: var(--text-dim);
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-    }
-    .btn-power:hover { color: white; background: rgba(255, 255, 255, 0.08); }
-    #btn-power-shutdown:hover { background: #dc3545; box-shadow: 0 0 10px rgba(220, 53, 69, 0.4); }
-    #btn-power-restart:hover { background: var(--gold); color: black; box-shadow: 0 0 10px rgba(255, 193, 7, 0.4); }
-    #btn-power-lock:hover { background: var(--cyan); color: black; box-shadow: 0 0 10px rgba(0, 243, 255, 0.4); }
-    .start-main {
-      flex: 1;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-    .start-title {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-dim);
-      margin-bottom: 12px;
-    }
-    .start-apps {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-auto-rows: 46px;
-      gap: 4px;
-      overflow-y: auto;
-      margin-bottom: 15px;
-    }
-    .start-app {
-      display: flex;
-      align-items: center;
-      padding: 8px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
-    }
-    .start-app:hover {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: rgba(255, 255, 255, 0.05);
-    }
-    .start-app i {
-      font-size: 1.1rem;
-      margin-right: 12px;
-      width: 20px;
-      text-align: center;
-    }
-    .start-app-details {
-      display: flex;
-      flex-direction: column;
-    }
-    .start-app-name { font-size: 0.75rem; font-weight: 600; }
-    .start-app-desc { font-size: 0.6rem; color: var(--text-dim); }
-    .start-stats {
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .stat-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.65rem;
-    }
-    .stat-label { color: var(--text-dim); }
-    .stat-bar {
-      width: 120px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .stat-fill {
-      height: 100%;
-      background: var(--cyan);
-      box-shadow: 0 0 6px var(--cyan);
-      transition: width 1s ease;
-    }
-    /* Shutdown Screen Overlay */
-    #shutdown-screen {
-      background-color: #010103;
-      z-index: 10000;
-    }
-    .shutdown-wrap { text-align: center; }
-    .shutdown-icon {
-      font-size: 3.5rem;
-      color: var(--pink);
-      text-shadow: 0 0 20px rgba(255, 0, 127, 0.6);
-      margin-bottom: 25px;
-      animation: power-pulse 2s infinite alternate ease-in-out;
-    }
-    @keyframes power-pulse {
-      0% { transform: scale(1); opacity: 0.7; }
-      100% { transform: scale(1.1); opacity: 1; }
-    }
-    #shutdown-screen h2 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.4rem;
-      letter-spacing: 2px;
-      margin-bottom: 8px;
-    }
-    #shutdown-screen p { color: var(--text-dim); font-size: 0.85rem; }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Space Background Canvas -->
-  <!-- Screen background canvas and nebula overlay -->
+
+  <!-- ============================================================
+       BACKGROUND LAYERS
+       Starfield canvas sits behind everything.
+       Nebula overlay adds purple/magenta depth gradients.
+  ============================================================ -->
   <canvas id="starfield"></canvas>
   <div id="nebula-overlay"></div>
-  <div id="nebula"></div>
-  <!-- 1. System Bootloader -->
+
+
+  <!-- ============================================================
+       1. BOOT SCREEN
+       Shows on first load with a progress bar and status messages.
+       Fades out automatically once all boot steps complete.
+  ============================================================ -->
   <div id="bootloader" class="system-overlay">
+
     <div class="boot-logo-container">
-      <img src="logo.jpg" alt="Zenzei OS Logo" class="boot-logo">
-  <!-- Boot loader screen -->
-  <div id="bootloader" class="overlay-screen">
-    <div style="display: flex; flex-direction: column; align-items: center;">
-      <img src="logo.jpg" alt="Zenzei OS" class="boot-logo" onerror="this.src='https://placehold.co/150x150/090911/00f3ff?text=Z';">
+      <img
+        src="logo.jpg"
+        alt="Zenzei OS Logo"
+        class="boot-logo"
+        onerror="this.src='https://placehold.co/160x160/090911/00f3ff?text=Z'"
+      />
       <h1 class="boot-title">ZENZEI<span>OS</span></h1>
     </div>
+
     <div class="boot-progress-wrapper">
       <div class="boot-progress-bar" id="boot-progress"></div>
-    <div class="progress-track">
-      <div class="progress-fill" id="boot-progress"></div>
     </div>
-    <div class="boot-status" id="boot-status">Loading interstellar kernel...</div>
-    <div class="status-text" id="boot-status">Booting core files...</div>
-  </div>
-  <!-- 2. System Lock Screen -->
+
+    <p class="boot-status" id="boot-status">Initializing kernel...</p>
+
+  </div><!-- /#bootloader -->
+
+
+  <!-- ============================================================
+       2. LOCK SCREEN
+       Hidden until boot finishes. Shows a live clock and login card.
+       User clicks "Enter Orbit" (or presses Space/Enter) to unlock.
+  ============================================================ -->
   <div id="lockscreen" class="system-overlay hidden">
+
     <div class="lockscreen-time-container">
       <div id="lockscreen-time">00:00</div>
       <div id="lockscreen-date">Monday, January 1</div>
-  <!-- Lock screen -->
-  <div id="lock-screen" class="overlay-screen hidden">
-    <div class="clock-display">
-      <div class="time-val" id="lock-time">00:00</div>
-      <div class="date-val" id="lock-date">Monday, January 1</div>
     </div>
-    
+
     <div class="lockscreen-login-card">
+
       <div class="user-avatar-wrapper">
-        <img src="logo.jpg" alt="User Avatar" class="user-avatar">
-    <div class="login-box">
-      <div class="user-img">
-        <img src="logo.jpg" alt="User Avatar" onerror="this.src='https://placehold.co/90x90/090911/00f3ff?text=Z';">
+        <img
+          src="logo.jpg"
+          alt="User Avatar"
+          class="user-avatar"
+          onerror="this.src='https://placehold.co/90x90/090911/00f3ff?text=Z'"
+        />
       </div>
+
       <div class="user-name">Cosmic Explorer</div>
+
       <button id="btn-unlock" class="btn-galaxy">
-      <div class="user-title">Cosmic Explorer</div>
-      <button id="btn-login" class="btn-action">
         <span>Enter Orbit</span>
         <i class="fa-solid fa-rocket"></i>
       </button>
+
     </div>
-    
+
     <div class="lockscreen-footer">
-      <span>Zenzei OS 1.0 • Click anywhere or press Space to wake</span>
-    <div style="position: absolute; bottom: 30px; font-size: 0.8rem; color: var(--text-dim);">
-      Zenzei OS 1.0 • Click or press Enter/Space to unlock
+      Zenzei OS 1.0 &bull; Press Space or Enter to wake
     </div>
-  </div>
-  <!-- 3. Desktop Environment -->
-  <!-- Desktop workspace -->
+
+  </div><!-- /#lockscreen -->
+
+
+  <!-- ============================================================
+       3. DESKTOP ENVIRONMENT
+       Hidden until the user unlocks. Contains:
+         - Desktop shortcut icons (left column)
+         - Window container (where app windows are spawned)
+         - Taskbar at the bottom
+  ============================================================ -->
   <div id="desktop" class="hidden">
-    <!-- Desktop Grid Icons -->
+
+    <!-- ── Desktop Shortcut Icons ── -->
     <div class="desktop-shortcuts">
-      <div class="shortcut" id="shortcut-terminal" onclick="OS.openApp('terminal')">
+
+      <div class="shortcut" ondblclick="OS.openApp('terminal')">
         <div class="shortcut-icon-wrapper terminal-theme">
           <i class="fa-solid fa-terminal"></i>
         </div>
         <span class="shortcut-label">Cosmic Terminal</span>
-    <!-- Desktop shortcuts grid -->
-    <div class="desktop-grid">
-      <div class="desktop-item" onclick="openApp('terminal')">
-        <div class="icon-box icon-terminal"><i class="fa-solid fa-terminal"></i></div>
-        <span class="item-label">Cosmic Terminal</span>
       </div>
-      <div class="shortcut" id="shortcut-notes" onclick="OS.openApp('notes')">
+
+      <div class="shortcut" ondblclick="OS.openApp('notes')">
         <div class="shortcut-icon-wrapper notes-theme">
           <i class="fa-regular fa-clipboard"></i>
         </div>
         <span class="shortcut-label">Nebula Notes</span>
-      <div class="desktop-item" onclick="openApp('notes')">
-        <div class="icon-box icon-notes"><i class="fa-regular fa-clipboard"></i></div>
-        <span class="item-label">Nebula Notes</span>
       </div>
-      <div class="shortcut" id="shortcut-asteroids" onclick="OS.openApp('asteroids')">
+
+      <div class="shortcut" ondblclick="OS.openApp('asteroids')">
         <div class="shortcut-icon-wrapper game-theme">
           <i class="fa-solid fa-meteor"></i>
         </div>
         <span class="shortcut-label">Cosmic Asteroids</span>
-      <div class="desktop-item" onclick="openApp('asteroids')">
-        <div class="icon-box icon-asteroids"><i class="fa-solid fa-meteor"></i></div>
-        <span class="item-label">Cosmic Asteroids</span>
       </div>
-      <div class="shortcut" id="shortcut-draw" onclick="OS.openApp('draw')">
+
+      <div class="shortcut" ondblclick="OS.openApp('draw')">
         <div class="shortcut-icon-wrapper draw-theme">
           <i class="fa-solid fa-wand-magic-sparkles"></i>
         </div>
         <span class="shortcut-label">Stellar Draw</span>
-      <div class="desktop-item" onclick="openApp('draw')">
-        <div class="icon-box icon-draw"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-        <span class="item-label">Stellar Draw</span>
       </div>
 
+      <div class="shortcut" ondblclick="OS.openApp('explorer')">
+        <div class="shortcut-icon-wrapper explorer-theme">
+          <i class="fa-solid fa-user-astronaut"></i>
+        </div>
+        <span class="shortcut-label">Space Explorer</span>
+      </div>
 
-      <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zenzei OS - Celestial Workspace</title>
-  <!-- SEO Metadata -->
-  <meta name="description" content="Zenzei OS - A sleek, space-themed, web-based operating system featuring interactive apps, simulated OS metrics, and glassmorphic aesthetics.">
-  <!-- Fonts -->
-  <title>Zenzei OS - Space Workspace</title>
-  
-  <!-- Fonts & Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-  <!-- FontAwesome Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css">
-  <style>
-    /* Styling settings & variables */
-    :root {
-      --bg-dark: #05050b;
-      --bg-panel: rgba(10, 10, 22, 0.65);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --active-glow: rgba(0, 243, 255, 0.35);
-      
-      --cyan: #00f3ff;
-      --pink: #ff007f;
-      --purple: #bd00ff;
-      --violet: #a985ff;
-      --green: #2ecc71;
-      --orange: #ff7f50;
-      --gold: #ffc107;
-      --text-white: #f5f6fa;
-      --text-dim: rgba(245, 246, 250, 0.7);
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-    }
-    body {
-      font-family: 'Inter', sans-serif;
-      color: var(--text-white);
-      background-color: var(--bg-dark);
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      position: relative;
-    }
-    /* Background Space Elements */
-    #starfield {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-      pointer-events: none;
-    }
-    #nebula {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-      background: radial-gradient(circle at 80% 20%, rgba(72, 20, 139, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 20% 80%, rgba(112, 16, 163, 0.15) 0%, transparent 60%);
-      transition: background 2s ease;
-    }
-    /* Custom scrollbars */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.15);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--cyan);
-    }
-    /* Utility classes */
-    .hidden { display: none !important; }
-    .text-green { color: var(--green); }
-    .text-cyan { color: var(--cyan); }
-    .text-violet { color: var(--violet); }
-    .text-pink { color: var(--pink); }
-    .text-orange { color: var(--orange); }
-    .text-gold { color: var(--gold); }
-    /* Interactive button styles */
-    .btn-action {
-      background: linear-gradient(135deg, #48148b 0%, #0d6efd 100%);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
-      padding: 10px 24px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.9rem;
-      border-radius: 30px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
-      transition: all 0.3s ease;
-    }
-    .btn-action:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 243, 255, 0.5);
-      border-color: var(--cyan);
-    }
-    /* System Boot Screen */
-    .overlay-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background-color: #030307;
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    .boot-logo {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      box-shadow: 0 0 40px rgba(112, 16, 163, 0.6);
-      animation: logo-glow 3s infinite alternate ease-in-out;
-    }
-    .boot-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 2.2rem;
-      letter-spacing: 6px;
-      margin-top: 20px;
-      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-    }
-    .boot-title span { color: var(--cyan); }
-    .progress-track {
-      width: 280px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 2px;
-      overflow: hidden;
-      margin: 25px 0 15px 0;
-    }
-    .progress-fill {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #0d6efd, var(--cyan));
-      box-shadow: 0 0 10px var(--cyan);
-      transition: width 0.1s ease;
-    }
-    .status-text {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.8rem;
-      color: var(--text-dim);
-    }
-    @keyframes logo-glow {
-      0% { transform: scale(1); box-shadow: 0 0 30px rgba(112, 16, 163, 0.4); }
-      100% { transform: scale(1.03); box-shadow: 0 0 60px rgba(0, 243, 255, 0.7); }
-    }
-    /* Lock Screen Layout */
-    #lock-screen {
-      background: radial-gradient(circle at center, rgba(13, 13, 30, 0.85) 0%, #030307 100%);
-      backdrop-filter: blur(15px);
-    }
-    .clock-display {
-      text-align: center;
-      margin-bottom: 50px;
-    }
-    .time-val {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 5.5rem;
-      font-weight: 900;
-      text-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
-    }
-    .date-val {
-      font-size: 1.1rem;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      margin-top: 8px;
-      color: var(--text-dim);
-    }
-    .login-box {
-      background: rgba(10, 10, 22, 0.6);
-      border: 1px solid var(--border-color);
-      padding: 40px;
-      border-radius: 20px;
-      width: 320px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    }
-    .user-img {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      padding: 3px;
-      background: linear-gradient(135deg, var(--cyan), var(--purple));
-      margin-bottom: 18px;
-    }
-    .user-img img {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-    }
-    .user-title {
-      font-weight: 600;
-      font-size: 1.1rem;
-      margin-bottom: 25px;
-    }
-    /* Desktop Area */
-    #desktop {
-      width: 100%;
-      height: calc(100vh - 48px);
-      position: relative;
-    }
-    .desktop-grid {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      display: grid;
-      grid-auto-flow: row;
-      grid-template-rows: repeat(auto-fill, 100px);
-      gap: 15px;
-      width: 120px;
-      height: 100%;
-      z-index: 10;
-    }
-    .desktop-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100px;
-      height: 100px;
-      border-radius: 12px;
-      cursor: pointer;
-      text-align: center;
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
-    }
-    .desktop-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: rgba(255, 255, 255, 0.1);
-    }
-    .icon-box {
-      width: 50px;
-      height: 50px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: white;
-      margin-bottom: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s ease;
-    }
-    .desktop-item:hover .icon-box {
-      transform: scale(1.1) translateY(-2px);
-    }
-    /* App-specific color themes for shortcuts */
-    .icon-terminal { background: linear-gradient(135deg, #111, #333); border: 1px solid rgba(0, 243, 255, 0.3); }
-    .icon-notes { background: linear-gradient(135deg, #48148b, #6f42c1); border: 1px solid rgba(169, 133, 255, 0.3); }
-    .icon-asteroids { background: linear-gradient(135deg, #5b1414, #fd7e14); border: 1px solid rgba(253, 126, 20, 0.3); }
-    .icon-draw { background: linear-gradient(135deg, #7010a3, var(--pink)); border: 1px solid rgba(255, 0, 127, 0.3); }
-    .icon-explorer { background: linear-gradient(135deg, #0f5132, var(--green)); border: 1px solid rgba(46, 204, 113, 0.3); }
-    .icon-settings { background: linear-gradient(135deg, #444, var(--gold)); border: 1px solid rgba(255, 193, 7, 0.3); }
-    .desktop-item:hover .icon-terminal { box-shadow: 0 0 15px rgba(0, 243, 255, 0.6); }
-    .desktop-item:hover .icon-notes { box-shadow: 0 0 15px rgba(169, 133, 255, 0.6); }
-    .desktop-item:hover .icon-asteroids { box-shadow: 0 0 15px rgba(253, 126, 20, 0.6); }
-    .desktop-item:hover .icon-draw { box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); }
-    .desktop-item:hover .icon-explorer { box-shadow: 0 0 15px rgba(46, 204, 113, 0.6); }
-    .desktop-item:hover .icon-settings { box-shadow: 0 0 15px rgba(255, 193, 7, 0.6); }
-    .item-label {
-      font-size: 0.75rem;
-      font-weight: 500;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
-      max-width: 95px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    /* Window System Styles */
-    #window-container {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-    }
-    .window {
-      position: absolute;
-      min-width: 320px;
-      min-height: 240px;
-      background: var(--bg-panel);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      pointer-events: auto;
-      transition: opacity 0.15s ease-out, transform 0.15s ease-out;
-    }
-    .window.active-window {
-      border-color: var(--active-glow);
-      box-shadow: 0 12px 40px rgba(0, 243, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.5);
-    }
-    .window.minimized {
-      opacity: 0;
-      transform: scale(0.8) translateY(100px);
-      pointer-events: none;
-    }
-    .window.maximized {
-      top: 0 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: calc(100vh - 48px) !important;
-      border-radius: 0;
-      border: none;
-    }
-    .window-header {
-      height: 38px;
-      background: rgba(255, 255, 255, 0.03);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      padding: 0 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: move;
-    }
-    .window-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: var(--text-dim);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .active-window .window-title {
-      color: var(--text-white);
-      text-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
-    }
-    .window-buttons {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .btn-win {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 7px;
-      color: transparent;
-      transition: all 0.2s ease;
-    }
-    .btn-win:hover { color: rgba(0, 0, 0, 0.6); }
-    .btn-win-min { background-color: #ffbd2e; }
-    .btn-win-max { background-color: #27c93f; }
-    .btn-win-close { background-color: #ff5f56; }
-    .btn-win-min::before { content: "\f068"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
-    .btn-win-max::before { content: "\f065"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
-    .window.maximized .btn-win-max::before { content: "\f066"; }
-    .btn-win-close::before { content: "\f00d"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
-    .window-body {
-      flex: 1;
-      position: relative;
-      overflow: auto;
-      background: rgba(4, 4, 8, 0.3);
-    }
-    .window-resizer {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      right: 0;
-      bottom: 0;
-      cursor: se-resize;
-      z-index: 101;
-    }
-    /* --- Apps Styles --- */
-    /* Terminal App */
-    .terminal-box {
-      background-color: #030307;
-      font-family: 'Fira Code', monospace;
-      color: #39ff14;
-      padding: 16px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      overflow: auto;
-      font-size: 0.85rem;
-      line-height: 1.4;
-    }
-    .terminal-output {
-      flex: 1;
-      overflow-y: auto;
-      margin-bottom: 8px;
-    }
-    .terminal-line {
-      white-space: pre-wrap;
-      margin-bottom: 4px;
-    }
-    .terminal-input-row {
-      display: flex;
-      align-items: center;
-    }
-    .terminal-prompt {
-      color: var(--cyan);
-      margin-right: 8px;
-    }
-    .terminal-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #39ff14;
-      font-family: 'Fira Code', monospace;
-      font-size: 0.85rem;
-      caret-color: var(--cyan);
-    }
-    /* Notes App */
-    .notes-box {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      background: #090911;
-    }
-    .notes-header {
-      height: 40px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      justify-content: space-between;
-      background: rgba(255, 255, 255, 0.01);
-    }
-    .notes-status {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-    }
-    .btn-save-note {
-      background: rgba(0, 243, 255, 0.15);
-      border: 1px solid rgba(0, 243, 255, 0.3);
-      color: var(--cyan);
-      padding: 4px 12px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .btn-save-note:hover {
-      background: rgba(0, 243, 255, 0.3);
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-    }
-    .notes-text {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      padding: 16px;
-      color: var(--text-white);
-      font-family: inherit;
-      font-size: 0.9rem;
-      line-height: 1.5;
-      resize: none;
-    }
-    /* Asteroids Game */
-    .game-box {
-      background: #020205;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .game-canvas {
-      background: radial-gradient(circle at center, #070712 0%, #000000 100%);
-      display: block;
-      border-radius: 6px;
-    }
-    .game-hud {
-      position: absolute;
-      top: 15px;
-      width: calc(100% - 30px);
-      display: flex;
-      justify-content: space-between;
-      padding: 0 10px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.9rem;
-      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-      pointer-events: none;
-    }
-    .game-menu {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      z-index: 10;
-    }
-    .game-title {
-      font-family: 'Orbitron', sans-serif;
-      color: var(--cyan);
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-      text-shadow: 0 0 15px var(--cyan);
-    }
-    .game-desc {
-      font-size: 0.8rem;
-      color: var(--text-dim);
-      margin-bottom: 25px;
-      line-height: 1.6;
-    }
-    /* Paint App */
-    .paint-box {
-      display: flex;
-      height: 100%;
-      background: #090911;
-    }
-    .paint-toolbar {
-      width: 70px;
-      border-right: 1px solid rgba(255, 255, 255, 0.05);
-      background: rgba(0, 0, 0, 0.2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 15px 0;
-      gap: 20px;
-    }
-    .paint-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      width: 100%;
-    }
-    .paint-color {
-      -webkit-appearance: none;
-      border: none;
-      background: none;
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-    }
-    .paint-color::-webkit-color-swatch {
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-    }
-    .paint-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-dim);
-      background: rgba(255, 255, 255, 0.02);
-      transition: all 0.2s ease;
-    }
-    .paint-btn.active {
-      background: var(--pink);
-      color: white;
-      border-color: var(--pink);
-      box-shadow: 0 0 10px var(--pink);
-    }
-    .paint-slider {
-      writing-mode: vertical-lr;
-      direction: rtl;
-      height: 80px;
-      width: 8px;
-      margin: 10px 0;
-      accent-color: var(--pink);
-      cursor: pointer;
-    }
-    .paint-btn-action:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: white;
-    }
-    .paint-btn-clear:hover { background: #dc3545; color: white; box-shadow: 0 0 10px rgba(220, 53, 69, 0.5); }
-    .paint-btn-save:hover { background: var(--cyan); color: #000; box-shadow: 0 0 10px var(--cyan); }
-    
-    .paint-workspace {
-      flex: 1;
-      position: relative;
-      background: #020205;
-    }
-    .paint-canvas {
-      display: block;
-      cursor: crosshair;
-    }
-    /* Settings App */
-    .settings-box {
-      padding: 20px;
-      background: #090911;
-      height: 100%;
-      overflow-y: auto;
-    }
-    .settings-section {
-      margin-bottom: 25px;
-    }
-    .settings-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 0.95rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-      padding-bottom: 6px;
-      margin-bottom: 15px;
-      letter-spacing: 1px;
-      color: var(--cyan);
-    }
-    .settings-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-      font-size: 0.85rem;
-    }
-    .wallpapers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .wallpaper-thumb {
-      height: 70px;
-      border-radius: 8px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      overflow: hidden;
-      position: relative;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-      transition: all 0.2s ease;
-    }
-    .wallpaper-thumb.active {
-      border-color: var(--cyan);
-      box-shadow: 0 0 10px var(--cyan);
-    }
-    .wallpaper-thumb span {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.75);
-      font-size: 0.7rem;
-      padding: 4px;
-      text-align: center;
-    }
-    /* Switch toggle styles */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 22px;
-    }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .switch-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(255, 255, 255, 0.1);
-      transition: 0.4s;
-      border-radius: 22px;
-    }
-    .switch-slider:before {
-      position: absolute;
-      content: "";
-      height: 14px; width: 14px;
-      left: 4px; bottom: 4px;
-      background-color: white;
-      transition: 0.4s;
-      border-radius: 50%;
-    }
-    input:checked + .switch-slider { background-color: var(--cyan); }
-    input:checked + .switch-slider:before { transform: translateX(22px); }
-    /* Explorer App */
-    .explorer-box {
-      display: flex;
-      height: 100%;
-      background: #06060c;
-    }
-    .explorer-sidebar {
-      width: 130px;
-      border-right: 1px solid rgba(255, 255, 255, 0.05);
-      background: rgba(0, 0, 0, 0.2);
-      display: flex;
-      flex-direction: column;
-      padding: 10px 0;
-    }
-    .explorer-item {
-      padding: 10px 15px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      color: var(--text-dim);
-      border-left: 3px solid transparent;
-      transition: all 0.2s ease;
-    }
-    .explorer-item:hover {
-      background: rgba(255, 255, 255, 0.02);
-      color: var(--text-white);
-    }
-    .explorer-item.active {
-      color: var(--cyan);
-      border-left-color: var(--cyan);
-      background: rgba(0, 243, 255, 0.03);
-    }
-    .explorer-content {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-    .explorer-hero {
-      width: 100%;
-      height: 160px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    }
-    .explorer-hero-title {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 900;
-      letter-spacing: 4px;
-      font-size: 1.5rem;
-      text-transform: uppercase;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
-    }
-    .explorer-title-text {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.3rem;
-      text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-    }
-    .explorer-desc {
-      font-size: 0.85rem;
-      color: var(--text-dim);
-      line-height: 1.6;
-    }
-    .explorer-specs {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-      margin-top: 10px;
-    }
-    .explorer-specs td {
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .explorer-specs td:first-child {
-      color: var(--cyan);
-      width: 40%;
-    }
-    /* Taskbar */
-    #taskbar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100vw;
-      height: 48px;
-      background: var(--bg-panel);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
-      z-index: 1000;
-    }
-    #start-btn {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: all 0.2s ease;
-    }
-    #start-btn:hover {
-      background: rgba(0, 243, 255, 0.15);
-      border-color: var(--cyan);
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
-    }
-    .start-logo {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-    }
-    .start-text {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 700;
-      font-size: 0.75rem;
-      letter-spacing: 1px;
-    }
-    #taskbar-apps {
-      flex: 1;
-      margin: 0 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      height: 100%;
-      overflow-x: auto;
-    }
-    .taskbar-pin {
-      height: 36px;
-      padding: 0 12px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      transition: all 0.2s ease;
-      min-width: 100px;
-      max-width: 150px;
-    }
-    .taskbar-pin:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-white);
-    }
-    .taskbar-pin.active {
-      background: rgba(0, 243, 255, 0.1);
-      border-color: rgba(0, 243, 255, 0.3);
-      color: white;
-      box-shadow: inset 0 -2px 0 var(--cyan);
-    }
-    .system-tray {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.75rem;
-      color: var(--text-dim);
-    }
-    .tray-icon {
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .tray-icon:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text-white);
-    }
-    .tray-clock {
-      font-family: 'Orbitron', sans-serif;
-      color: var(--text-white);
-      font-weight: 500;
-      padding: 4px;
-    }
-    /* Start Menu Panel */
-    #start-menu {
-      position: absolute;
-      bottom: 58px;
-      left: 12px;
-      width: 540px;
-      height: 400px;
-      background: var(--bg-panel);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      display: flex;
-      overflow: hidden;
-      z-index: 999;
-      animation: menu-slide 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
-    }
-    @keyframes menu-slide {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    .start-sidebar {
-      width: 180px;
-      background: rgba(0, 0, 0, 0.25);
-      border-right: 1px solid rgba(255, 255, 255, 0.03);
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-    }
-    .start-user {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: auto;
-      text-align: center;
-    }
-    .start-avatar {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 10px;
-    }
-    .start-name { font-weight: 600; font-size: 0.85rem; }
-    .start-status {
-      font-size: 0.65rem;
-      color: var(--text-dim);
-      margin-top: 3px;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .start-links {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    .start-link-item {
-      background: transparent;
-      border: none;
-      color: var(--text-dim);
-      text-align: left;
-      padding: 8px 12px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
-    }
-    .start-link-item:hover {
-      background: rgba(255, 255, 255, 0.03);
-      color: white;
-    }
-    .start-actions {
-      display: flex;
-      justify-content: space-around;
-      width: 100%;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 15px;
-    }
-    .btn-power {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      color: var(--text-dim);
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-    }
-    .btn-power:hover { color: white; background: rgba(255, 255, 255, 0.08); }
-    #btn-power-shutdown:hover { background: #dc3545; box-shadow: 0 0 10px rgba(220, 53, 69, 0.4); }
-    #btn-power-restart:hover { background: var(--gold); color: black; box-shadow: 0 0 10px rgba(255, 193, 7, 0.4); }
-    #btn-power-lock:hover { background: var(--cyan); color: black; box-shadow: 0 0 10px rgba(0, 243, 255, 0.4); }
-    .start-main {
-      flex: 1;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-    }
-    .start-title {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-dim);
-      margin-bottom: 12px;
-    }
-    .start-apps {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr;
-      grid-auto-rows: 46px;
-      gap: 4px;
-      overflow-y: auto;
-      margin-bottom: 15px;
-    }
-    .start-app {
-      display: flex;
-      align-items: center;
-      padding: 8px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.2s ease;
-    }
-    .start-app:hover {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: rgba(255, 255, 255, 0.05);
-    }
-    .start-app i {
-      font-size: 1.1rem;
-      margin-right: 12px;
-      width: 20px;
-      text-align: center;
-    }
-    .start-app-details {
-      display: flex;
-      flex-direction: column;
-    }
-    .start-app-name { font-size: 0.75rem; font-weight: 600; }
-    .start-app-desc { font-size: 0.6rem; color: var(--text-dim); }
-    .start-stats {
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .stat-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 0.65rem;
-    }
-    .stat-label { color: var(--text-dim); }
-    .stat-bar {
-      width: 120px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .stat-fill {
-      height: 100%;
-      background: var(--cyan);
-      box-shadow: 0 0 6px var(--cyan);
-      transition: width 1s ease;
-    }
-    /* Shutdown Screen Overlay */
-    #shutdown-screen {
-      background-color: #010103;
-      z-index: 10000;
-    }
-    .shutdown-wrap { text-align: center; }
-    .shutdown-icon {
-      font-size: 3.5rem;
-      color: var(--pink);
-      text-shadow: 0 0 20px rgba(255, 0, 127, 0.6);
-      margin-bottom: 25px;
-      animation: power-pulse 2s infinite alternate ease-in-out;
-    }
-    @keyframes power-pulse {
-      0% { transform: scale(1); opacity: 0.7; }
-      100% { transform: scale(1.1); opacity: 1; }
-    }
-    #shutdown-screen h2 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.4rem;
-      letter-spacing: 2px;
-      margin-bottom: 8px;
-    }
-    #shutdown-screen p { color: var(--text-dim); font-size: 0.85rem; }
-  </style>
-</head>
-<body>
-  <!-- Space Background Canvas -->
-  <!-- Screen background canvas and nebula overlay -->
-  <canvas id="starfield"></canvas>
-  <div id="nebula-overlay"></div>
-  <div id="nebula"></div>
-  <!-- 1. System Bootloader -->
-  <div id="bootloader" class="system-overlay">
-    <div class="boot-logo-container">
-      <img src="logo.jpg" alt="Zenzei OS Logo" class="boot-logo">
-  <!-- Boot loader screen -->
-  <div id="bootloader" class="overlay-screen">
-    <div style="display: flex; flex-direction: column; align-items: center;">
-      <img src="logo.jpg" alt="Zenzei OS" class="boot-logo" onerror="this.src='https://placehold.co/150x150/090911/00f3ff?text=Z';">
-      <h1 class="boot-title">ZENZEI<span>OS</span></h1>
-    </div>
-    <div class="boot-progress-wrapper">
-      <div class="boot-progress-bar" id="boot-progress"></div>
-    <div class="progress-track">
-      <div class="progress-fill" id="boot-progress"></div>
-    </div>
-    <div class="boot-status" id="boot-status">Loading interstellar kernel...</div>
-    <div class="status-text" id="boot-status">Booting core files...</div>
-  </div>
-  <!-- 2. System Lock Screen -->
-  <div id="lockscreen" class="system-overlay hidden">
-    <div class="lockscreen-time-container">
-      <div id="lockscreen-time">00:00</div>
-      <div id="lockscreen-date">Monday, January 1</div>
-  <!-- Lock screen -->
-  <div id="lock-screen" class="overlay-screen hidden">
-    <div class="clock-display">
-      <div class="time-val" id="lock-time">00:00</div>
-      <div class="date-val" id="lock-date">Monday, January 1</div>
-    </div>
-    
-    <div class="lockscreen-login-card">
-      <div class="user-avatar-wrapper">
-        <img src="logo.jpg" alt="User Avatar" class="user-avatar">
-    <div class="login-box">
-      <div class="user-img">
-        <img src="logo.jpg" alt="User Avatar" onerror="this.src='https://placehold.co/90x90/090911/00f3ff?text=Z';">
+      <div class="shortcut" ondblclick="OS.openApp('settings')">
+        <div class="shortcut-icon-wrapper settings-theme">
+          <i class="fa-solid fa-sliders"></i>
+        </div>
+        <span class="shortcut-label">Orion Control</span>
       </div>
-      <div class="user-name">Cosmic Explorer</div>
-      <button id="btn-unlock" class="btn-galaxy">
-      <div class="user-title">Cosmic Explorer</div>
-      <button id="btn-login" class="btn-action">
-        <span>Enter Orbit</span>
-        <i class="fa-solid fa-rocket"></i>
-      </button>
-    </div>
-    
-    <div class="lockscreen-footer">
-      <span>Zenzei OS 1.0 • Click anywhere or press Space to wake</span>
-    <div style="position: absolute; bottom: 30px; font-size: 0.8rem; color: var(--text-dim);">
-      Zenzei OS 1.0 • Click or press Enter/Space to unlock
+
+    </div><!-- /.desktop-shortcuts -->
+
+
+    <!-- ── Window Container (app windows are injected here by JS) ── -->
+    <div id="windows-container"></div>
+
+
+    <!-- ── Taskbar ── -->
+    <div id="taskbar">
+
+      <!-- Start Button -->
+      <div id="start-button">
+        <img
+          src="logo.jpg"
+          alt="Start"
+          class="start-btn-logo"
+          onerror="this.src='https://placehold.co/20x20/090911/00f3ff?text=Z'"
+        />
+        <span class="start-btn-text">START</span>
+      </div>
+
+      <!-- Open App Pins (populated dynamically by JS) -->
+      <div id="taskbar-apps-container"></div>
+
+      <!-- System Tray -->
+      <div class="system-tray">
+
+        <div class="tray-icon" id="tray-audio" title="Toggle Sound">
+          <i class="fa-solid fa-volume-high"></i>
+        </div>
+
+        <div class="tray-divider"></div>
+
+        <div class="tray-clock" id="tray-time">00:00:00</div>
+
+      </div><!-- /.system-tray -->
+
+    </div><!-- /#taskbar -->
+
+
+    <!-- ── Start Menu (toggled by the Start button) ── -->
+    <div id="start-menu" class="hidden">
+
+      <!-- Left sidebar: user info + power actions -->
+      <div class="start-menu-sidebar">
+
+        <div class="start-sidebar-user">
+          <img
+            src="logo.jpg"
+            alt="User"
+            class="start-avatar"
+            onerror="this.src='https://placehold.co/64x64/090911/00f3ff?text=Z'"
+          />
+          <div class="start-username">Cosmic Explorer</div>
+          <div class="start-user-status">
+            <i class="fa-solid fa-circle text-green" style="font-size:0.5rem;"></i>
+            Online
+          </div>
+        </div>
+
+        <div class="start-sidebar-links">
+          <button class="start-sidebar-item" onclick="OS.openApp('settings'); document.getElementById('start-menu').classList.add('hidden');">
+            <i class="fa-solid fa-sliders"></i> Settings
+          </button>
+          <button class="start-sidebar-item" onclick="OS.openApp('explorer'); document.getElementById('start-menu').classList.add('hidden');">
+            <i class="fa-solid fa-user-astronaut"></i> Space Explorer
+          </button>
+        </div>
+
+        <div class="start-sidebar-actions">
+          <button class="btn-start-action" id="btn-lock-os" title="Lock">
+            <i class="fa-solid fa-lock"></i>
+          </button>
+          <button class="btn-start-action" id="btn-restart-os" title="Restart">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+          <button class="btn-start-action" id="btn-shutdown-os" title="Shut Down">
+            <i class="fa-solid fa-power-off"></i>
+          </button>
+        </div>
+
+      </div><!-- /.start-menu-sidebar -->
+
+      <!-- Right panel: app list + system stats -->
+      <div class="start-menu-main">
+
+        <div class="start-section-title">Applications</div>
+
+        <div class="start-apps-grid">
+
+          <div class="start-app-item" onclick="OS.openApp('terminal'); document.getElementById('start-menu').classList.add('hidden');">
+            <i class="fa-solid fa-terminal start-app-icon text-cyan"></i>
+            <div class="start-app-info">
+              <div class="start-app-name">Cosmic Terminal</div>
+              <div class="start-app-desc">Command the stars</div>
+            </div>
+          </div>
+
+          <div class="start-app-item" onclick="OS.openApp('notes'); document.getElementById('start-menu').classList.add('hidden');">
+            <i class="fa-regular fa-clipboard start-app-icon text-violet"></i>
+            <div class="start-app-info">
+              <div class="start-app-name">Nebula Notes</div>
+              <div class="start-app-desc">Capture your thoughts</div>
+            </div>
+          </div>
+
+          <div class="start-app-item" onclick="OS.openApp('asteroids'); document.getElementById('start-menu').classList.add('hidden');">
+            <i class="fa-solid fa-meteor start-app-icon text-orange"></i>
+            <div class="start-app-info">
+              <div class="start-app-name">Cosmic Asteroids</div>
+              <div class="start-app-desc">Dodge and destroy</div>
+            </div>
+          </div>
+
+          <div class="start-app-item" onclick="OS.openApp('draw'); document.getElementById('start-menu').classList.add('hidden');">
+            <i class="fa-solid fa-wand-magic-sparkles start-app-icon text-pink"></i>
+            <div class="start-app-info">
+              <div class="start-app-name">Stellar Draw</div>
+              <div class="start-app-desc">Paint across the cosmos</div>
+            </div>
+          </div>
+
+          <div class="start-app-item" onclick="OS.openApp('explorer'); document.getElementById('start-menu').classList.add('hidden');">
+            <i class="fa-solid fa-user-astronaut start-app-icon text-green"></i>
+            <div class="start-app-info">
+              <div class="start-app-name">Space Explorer</div>
+              <div class="start-app-desc">Explore the universe</div>
+            </div>
+          </div>
+
+          <div class="start-app-item" onclick="OS.openApp('settings'); document.getElementById('start-menu').classList.add('hidden');">
+            <i class="fa-solid fa-sliders start-app-icon text-gold"></i>
+            <div class="start-app-info">
+              <div class="start-app-name">Orion Control</div>
+              <div class="start-app-desc">Customize your OS</div>
+            </div>
+          </div>
+
+        </div><!-- /.start-apps-grid -->
+
+        <!-- Live CPU / RAM meters -->
+        <div class="start-system-stats">
+
+          <div class="start-stat-item">
+            <span class="stat-lbl">CPU</span>
+            <div class="stat-progress-bar">
+              <div id="cpu-loader" style="width: 12%;"></div>
+            </div>
+          </div>
+
+          <div class="start-stat-item">
+            <span class="stat-lbl">RAM</span>
+            <div class="stat-progress-bar">
+              <div id="ram-loader" style="width: 38%;"></div>
+            </div>
+          </div>
+
+        </div><!-- /.start-system-stats -->
+
+      </div><!-- /.start-menu-main -->
+
+    </div><!-- /#start-menu -->
+
+  </div><!-- /#desktop -->
+
+
+  <!-- ============================================================
+       4. SHUTDOWN / RESTART OVERLAY
+       Shown briefly before a power action takes effect.
+  ============================================================ -->
+  <div id="shutdown-screen" class="system-overlay hidden">
+    <div class="shutdown-content">
+      <div class="shutdown-icon-animate">
+        <i class="fa-solid fa-power-off"></i>
+      </div>
+      <h2 id="shutdown-text">Shutting down...</h2>
+      <p>Please wait a moment.</p>
     </div>
   </div>
-  <!-- 3. Desktop Environment -->
-  <!-- Desktop workspace -->
-  <div id="desktop" class="hidden">
-    <!-- Desktop Grid Icons -->
-    <div class="desktop-shortcuts">
-      <div class="shortcut" id="shortcut-terminal" onclick="OS.openApp('terminal')">
-        <div class="shortcut-icon-wrapper terminal-theme">
-          <i class="fa-solid fa-terminal"></i>
-        </div>
-        <span class="shortcut-label">Cosmic Terminal</span>
-    <!-- Desktop shortcuts grid -->
-    <div class="desktop-grid">
-      <div class="desktop-item" onclick="openApp('terminal')">
-        <div class="icon-box icon-terminal"><i class="fa-solid fa-terminal"></i></div>
-        <span class="item-label">Cosmic Terminal</span>
-      </div>
-      <div class="shortcut" id="shortcut-notes" onclick="OS.openApp('notes')">
-        <div class="shortcut-icon-wrapper notes-theme">
-          <i class="fa-regular fa-clipboard"></i>
-        </div>
-        <span class="shortcut-label">Nebula Notes</span>
-      <div class="desktop-item" onclick="openApp('notes')">
-        <div class="icon-box icon-notes"><i class="fa-regular fa-clipboard"></i></div>
-        <span class="item-label">Nebula Notes</span>
-      </div>
-      <div class="shortcut" id="shortcut-asteroids" onclick="OS.openApp('asteroids')">
-        <div class="shortcut-icon-wrapper game-theme">
-          <i class="fa-solid fa-meteor"></i>
-        </div>
-        <span class="shortcut-label">Cosmic Asteroids</span>
-      <div class="desktop-item" onclick="openApp('asteroids')">
-        <div class="icon-box icon-asteroids"><i class="fa-solid fa-meteor"></i></div>
-        <span class="item-label">Cosmic Asteroids</span>
-      </div>
-      <div class="shortcut" id="shortcut-draw" onclick="OS.openApp('draw')">
-        <div class="shortcut-icon-wrapper draw-theme">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-        </div>
-        <span class="shortcut-label">Stellar Draw</span>
-      <div class="desktop-item" onclick="openApp('draw')">
-        <div class="icon-box icon-draw"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-        <span class="item-label">Stellar Draw</span>
-      </div>
+
+
+  <!-- Main Application Script -->
+  <script src="app.js"></script>
+
+</body>
+</html>
