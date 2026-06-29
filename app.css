@@ -1,6 +1,6 @@
 /* ============================================================
    ZENZEI OS — Main Stylesheet
-   A space-themed glassmorphic desktop environment.
+  
 
    Table of Contents
    -----------------
@@ -28,6 +28,8 @@
 /* ============================================================
    1. CSS CUSTOM PROPERTIES
 ============================================================ */
+
+/* Keeping all theme values here makes experimenting with different looks much easier later. */
 :root {
   /* Color palette */
   --space-obsidian:   #05050b;
@@ -61,6 +63,8 @@
 /* ============================================================
    2. RESET & BASE
 ============================================================ */
+
+/* Basic cleanup before any component styles start building on top of this. */
 *,
 *::before,
 *::after {
@@ -69,6 +73,8 @@
   padding: 0;
   user-select: none;
 }
+
+/* The whole UI behaves like a desktop, so scrolling is intentionally disabled. */
 
 body {
   font-family: var(--font-sans);
@@ -88,7 +94,8 @@ body {
   pointer-events: none;
 }
 
-/* Nebula colour overlay */
+/* Nebula colour overlay -
+ Just adds a little depth over the stars without getting in the way. */
 #nebula-overlay {
   position: fixed;
   inset: 0;
