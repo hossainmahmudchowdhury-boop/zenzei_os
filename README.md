@@ -45,6 +45,6 @@ It is built entirely with:
 
 
 
-[![Watch the video](https://youtu.be/u1UM9jtmZ5w)
+[![Watch the video](https://youtu.be/u1UM9jtmZ5w)] (https://youtu.be/u1UM9jtmZ5w)
 
 * Turn effects on or, offeffects - Change wallpapers - Configure visual settings Available wallpapers: - Deep Space Obsidian - Orion Purple - Supernova Red - Andromeda Blue
