@@ -3,9 +3,9 @@
 Zenzei OS is a sleek, lightweight, browser-based operating system simulation inspired by futuristic themed space interfaces.
 (^-^)
 It is built entirely with:
-#HTML5 
-#CSS3 
-#JavaScript
+# HTML5 
+# CSS3 
+# JavaScript
 
 ## Features
 
@@ -42,5 +42,9 @@ It is built entirely with:
 * Change the wallpaper
 
 * Turn the starfield on or off
+
+
+
+[![Watch the video](https://github.com/hossainmahmudchowdhury-boop/zenzei_os/blob/main/Video%20Project%203.mp4)
 
 * Turn effects on or, offeffects - Change wallpapers - Configure visual settings Available wallpapers: - Deep Space Obsidian - Orion Purple - Supernova Red - Andromeda Blue
