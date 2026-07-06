@@ -42,9 +42,8 @@ It is built entirely with:
 * Change the wallpaper
 
 * Turn the starfield on or off
-
-
-
-[![Watch the video](https://youtu.be/u1UM9jtmZ5w)] (https://youtu.be/u1UM9jtmZ5w)
-
+* 
 * Turn effects on or, offeffects - Change wallpapers - Configure visual settings Available wallpapers: - Deep Space Obsidian - Orion Purple - Supernova Red - Andromeda Blue
+
+
+[![Watch the video](https://github.com/hossainmahmudchowdhury-boop/zenzei_os/blob/main/front.png)] (https://youtu.be/u1UM9jtmZ5w)
