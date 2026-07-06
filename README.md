@@ -46,4 +46,4 @@ It is built entirely with:
 * Turn effects on or, offeffects - Change wallpapers - Configure visual settings Available wallpapers: - Deep Space Obsidian - Orion Purple - Supernova Red - Andromeda Blue
 
 ![image alt](https://github.com/hossainmahmudchowdhury-boop/zenzei_os/blob/main/front.png)
-# ![Watch the video] (https://www.youtube.com/watch?v=u1UM9jtmZ5w)   
+[ ![Watch the video] (https://www.youtube.com/watch?v=u1UM9jtmZ5w)   ]
