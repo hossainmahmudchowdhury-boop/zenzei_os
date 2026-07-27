@@ -1,310 +1,244 @@
-/* Zenzei OS is a cool operating system that you can use in your browser. It looks like something from a science fiction movie. I made it useing HTML, CSS and JavaScript to build it. This means you can use it in your browser without needing to install anything extra.
-The Zenzei OS project has a lot of features. It has its way of managing windows, a background that looks like stars moving in space and sound effects that are like what you would hear in a spaceship. The design of OS is also very futuristic and sleek. There are a few built-in applications that are all, about space. And you can use them all right in your browser. 
-*/
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-
-  <!-- Responsive layout so everything scales nicely on different screens -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Helps search engines understand what this page is about -->
-  <meta name="description" content="Zenzei OS — It is a space-themed web desktop with glassmorphic aesthetics and interactive apps." />
+  <meta name="description" content="Zenzei OS — A space-themed web desktop with glassmorphic aesthetics and interactive applications." />
 
   <title>Zenzei OS — Workspace</title>
 
-  <!-- Typography used throughout the desktop -->
-  <!-- Inter for UI, Orbitron for branding, Fira Code for terminal -->
+  <!-- Typography: Inter for general UI, Orbitron for sci-fi headers, Fira Code for terminal -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
 
-  <!-- Icons for shortcuts, buttons and system tray -->
+  <!-- FontAwesome Icons for app shortcuts, system controls, and tray indicators -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <!-- Main stylesheet -->
+  <!-- Main Application Stylesheet -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- Background stays fixed while windows move around -->
-  <canvas id="starfield"></canvas>
+  <!-- Dynamic starfield canvas background rendered via JavaScript -->
+  <canvas id="starfield-canvas"></canvas>
 
-  <!-- Soft glow layer over the starfield -->
+  <!-- Visual atmospheric overlay to create nebula glow effects -->
   <div id="nebula-overlay"></div>
 
-  <div id="bootloader" class="system-overlay">
-
-    <!-- Separate wrapper makes it easier to animate the logo later -->
+  <!-- Boot sequence screen -->
+  <section id="bootloader-screen" class="system-overlay">
     <div class="boot-logo-container">
       <img
         src="logo.jpg"
         alt="Zenzei OS Logo"
         class="boot-logo"
-
-        <!-- Fallback image in case the local asset isn't available -->
         onerror="this.src='https://placehold.co/160x160/090911/00f3ff?text=Z'"
       />
       <h1 class="boot-title">ZENZEI<span>OS</span></h1>
     </div>
 
     <div class="boot-progress-wrapper">
-      <!-- Width gets updated from JavaScript -->
-      <div class="boot-progress-bar" id="boot-progress"></div>
+      <div id="boot-progress-bar" class="boot-progress-bar"></div>
     </div>
 
-    <!-- JS swaps these messages during startup -->
-    <p class="boot-status" id="boot-status">Initializing kernel...</p>
+    <p id="boot-status-message" class="boot-status">Initializing kernel...</p>
+  </section>
 
-  </div><!-- /#bootloader -->
-
-
-  <div id="lockscreen" class="system-overlay hidden">
-
-    <!-- Clock gets refreshed every second -->
-    <div class="lockscreen-time-container">
-      <div id="lockscreen-time">00:00</div>
-      <div id="lockscreen-date">Monday, January 1</div>
-    </div>
+  <!-- System Lockscreen -->
+  <section id="lockscreen" class="system-overlay hidden">
+    <header class="lockscreen-time-container">
+      <div id="lockscreen-current-time">00:00</div>
+      <div id="lockscreen-current-date">Monday, January 1</div>
+    </header>
 
     <div class="lockscreen-login-card">
-
       <div class="user-avatar-wrapper">
         <img
           src="logo.jpg"
-          alt="User Avatar"
+          alt="User Profile Avatar"
           class="user-avatar"
-
-          <!-- Keep the layout intact even if the image is missing -->
           onerror="this.src='https://placehold.co/90x90/090911/00f3ff?text=Z'"
         />
       </div>
 
-      <div class="user-name">Cosmic Explorer</div>
+      <h2 class="user-display-name">Cosmic Explorer</h2>
 
-      <!-- Main entry point into the desktop -->
-      <button id="btn-unlock" class="btn-galaxy">
+      <button id="unlock-system-button" class="btn-galaxy">
         <span>Enter Orbit</span>
-        <i class="fa-solid fa-rocket"></i>
+        <i class="fa-solid fa-rocket" aria-hidden="true"></i>
       </button>
-
     </div>
 
-    <!-- Small reminder for keyboard users -->
-    <div class="lockscreen-footer">
+    <footer class="lockscreen-footer">
       Zenzei OS 1.0 &bull; Press Space or Enter to wake
-    </div>
+    </footer>
+  </section>
 
-  </div><!-- /#lockscreen -->
+  <!-- Main Interactive Desktop Workspace -->
+  <main id="desktop-workspace" class="hidden">
 
+    <!-- Primary Desktop App Shortcuts -->
+    <section class="desktop-shortcuts" aria-label="Desktop Shortcuts">
 
-  <div id="desktop" class="hidden">
-
-    <!-- Keep shortcuts grouped on the left for a desktop-like feel -->
-    <div class="desktop-shortcuts">
-
-      <!-- Every shortcut simply tells the OS which app to launch -->
-      <div class="shortcut" ondblclick="OS.openApp('terminal')">
+      <button class="shortcut-item" data-app-id="terminal">
         <div class="shortcut-icon-wrapper terminal-theme">
-          <i class="fa-solid fa-terminal"></i>
+          <i class="fa-solid fa-terminal" aria-hidden="true"></i>
         </div>
         <span class="shortcut-label">Cosmic Terminal</span>
-      </div>
+      </button>
 
-      <div class="shortcut" ondblclick="OS.openApp('notes')">
+      <button class="shortcut-item" data-app-id="notes">
         <div class="shortcut-icon-wrapper notes-theme">
-          <i class="fa-regular fa-clipboard"></i>
+          <i class="fa-regular fa-clipboard" aria-hidden="true"></i>
         </div>
         <span class="shortcut-label">Nebula Notes</span>
-      </div>
+      </button>
 
-      <div class="shortcut" ondblclick="OS.openApp('asteroids')">
+      <button class="shortcut-item" data-app-id="asteroids">
         <div class="shortcut-icon-wrapper game-theme">
-          <i class="fa-solid fa-meteor"></i>
+          <i class="fa-solid fa-meteor" aria-hidden="true"></i>
         </div>
         <span class="shortcut-label">Cosmic Asteroids</span>
-      </div>
+      </button>
 
-      <div class="shortcut" ondblclick="OS.openApp('draw')">
+      <button class="shortcut-item" data-app-id="draw">
         <div class="shortcut-icon-wrapper draw-theme">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
         </div>
         <span class="shortcut-label">Stellar Draw</span>
-      </div>
+      </button>
 
-      <div class="shortcut" ondblclick="OS.openApp('explorer')">
+      <button class="shortcut-item" data-app-id="explorer">
         <div class="shortcut-icon-wrapper explorer-theme">
-          <i class="fa-solid fa-user-astronaut"></i>
+          <i class="fa-solid fa-user-astronaut" aria-hidden="true"></i>
         </div>
         <span class="shortcut-label">Space Explorer</span>
-      </div>
+      </button>
 
-      <div class="shortcut" ondblclick="OS.openApp('settings')">
+      <button class="shortcut-item" data-app-id="settings">
         <div class="shortcut-icon-wrapper settings-theme">
-          <i class="fa-solid fa-sliders"></i>
+          <i class="fa-solid fa-sliders" aria-hidden="true"></i>
         </div>
         <span class="shortcut-label">Orion Control</span>
-      </div>
+      </button>
 
-    </div>
+    </section>
 
-    <!-- New windows get injected here instead of being hardcoded -->
-    <div id="windows-container"></div>
+    <!-- Container where active application windows are dynamically injected -->
+    <div id="active-windows-container"></div>
 
-    <div id="taskbar">
+    <!-- System Taskbar -->
+    <footer id="system-taskbar">
 
-      <!-- Opens and closes the start menu -->
-      <div id="start-button">
+      <button id="start-menu-toggle-button">
         <img
           src="logo.jpg"
-          alt="Start"
+          alt="Start Menu Icon"
           class="start-btn-logo"
-
-          <!-- Tiny placeholder keeps spacing consistent -->
           onerror="this.src='https://placehold.co/20x20/090911/00f3ff?text=Z'"
         />
         <span class="start-btn-text">START</span>
-      </div>
+      </button>
 
-      <!-- Filled dynamically based on opened apps -->
-      <div id="taskbar-apps-container"></div>
+      <!-- Taskbar tabs for open windows -->
+      <div id="active-apps-taskbar-container"></div>
 
+      <!-- System Tray (Sound, Clock, Indicators) -->
       <div class="system-tray">
-
-        <!-- Future idea: connect this to actual audio state -->
-        <div class="tray-icon" id="tray-audio" title="Toggle Sound">
-          <i class="fa-solid fa-volume-high"></i>
-        </div>
+        <button id="audio-toggle-button" class="tray-icon-button" title="Toggle Audio Feedback">
+          <i class="fa-solid fa-volume-high" aria-hidden="true"></i>
+        </button>
 
         <div class="tray-divider"></div>
 
-        <!-- Live clock -->
-        <div class="tray-clock" id="tray-time">00:00:00</div>
-
+        <time id="system-tray-clock" class="tray-clock">00:00:00</time>
       </div>
 
-    </div>
+    </footer>
 
-    <!-- Hidden until the user presses Start -->
-    <div id="start-menu" class="hidden">
+    <!-- Start Launcher Menu -->
+    <nav id="start-menu-launcher" class="hidden" aria-label="Start Menu">
 
-      <div class="start-menu-sidebar">
-
-        <!-- Basic user profile section -->
+      <aside class="start-menu-sidebar">
         <div class="start-sidebar-user">
           <img
             src="logo.jpg"
-            alt="User"
+            alt="User Avatar"
             class="start-avatar"
             onerror="this.src='https://placehold.co/64x64/090911/00f3ff?text=Z'"
           />
-
           <div class="start-username">Cosmic Explorer</div>
-
-          <!-- Could be expanded later for offline/busy states -->
           <div class="start-user-status">
-            <i class="fa-solid fa-circle text-green" style="font-size:0.5rem;"></i>
-            Online
+            <i class="fa-solid fa-circle text-green"></i>
+            <span>Online</span>
           </div>
         </div>
 
-        <!-- Quick shortcuts -->
         <div class="start-sidebar-links">
-
-          <!-- Close the menu after opening an app -->
-          <button class="start-sidebar-item" onclick="OS.openApp('settings'); document.getElementById('start-menu').classList.add('hidden');">
-            <i class="fa-solid fa-sliders"></i> Settings
+          <button class="start-sidebar-item" data-action="open-app" data-app-id="settings">
+            <i class="fa-solid fa-sliders" aria-hidden="true"></i> Settings
           </button>
-
-          <button class="start-sidebar-item" onclick="OS.openApp('explorer'); document.getElementById('start-menu').classList.add('hidden');">
-            <i class="fa-solid fa-user-astronaut"></i> Space Explorer
+          <button class="start-sidebar-item" data-action="open-app" data-app-id="explorer">
+            <i class="fa-solid fa-user-astronaut" aria-hidden="true"></i> Space Explorer
           </button>
-
         </div>
 
-        <!-- Power controls stay grouped together -->
+        <!-- Power Management Actions -->
         <div class="start-sidebar-actions">
-
-          <button class="btn-start-action" id="btn-lock-os" title="Lock">
-            <i class="fa-solid fa-lock"></i>
+          <button id="lock-system-button" class="btn-start-action" title="Lock Desktop">
+            <i class="fa-solid fa-lock" aria-hidden="true"></i>
           </button>
-
-          <button class="btn-start-action" id="btn-restart-os" title="Restart">
-            <i class="fa-solid fa-rotate-right"></i>
+          <button id="restart-system-button" class="btn-start-action" title="Restart System">
+            <i class="fa-solid fa-rotate-right" aria-hidden="true"></i>
           </button>
-
-          <button class="btn-start-action" id="btn-shutdown-os" title="Shut Down">
-            <i class="fa-solid fa-power-off"></i>
+          <button id="shutdown-system-button" class="btn-start-action" title="Shut Down System">
+            <i class="fa-solid fa-power-off" aria-hidden="true"></i>
           </button>
-
         </div>
+      </aside>
 
-      </div>
+      <section class="start-menu-main">
+        <h3 class="start-section-title">Applications</h3>
 
-      <div class="start-menu-main">
-
-        <!-- Installed applications -->
-        <div class="start-section-title">Applications</div>
-
-        <!-- Easy to extend by duplicating one card -->
         <div class="start-apps-grid">
-
-          <!-- App cards follow the same structure for consistency -->
-          <!-- Remaining cards intentionally follow the exact same pattern -->
-
-          <!-- ...all existing app items remain unchanged... -->
-
+          <!-- Dynamically populated app grid cards -->
         </div>
 
-        <!-- These bars are purely visual -->
+        <!-- Simulated Real-time System Metrics -->
         <div class="start-system-stats">
-
           <div class="start-stat-item">
-            <span class="stat-lbl">CPU</span>
+            <span class="system-stat-label">CPU</span>
             <div class="stat-progress-bar">
-              <!-- Width updated from JS -->
-              <div id="cpu-loader" style="width: 12%;"></div>
+              <div id="cpu-usage-progress-bar"></div>
             </div>
           </div>
 
           <div class="start-stat-item">
-            <span class="stat-lbl">RAM</span>
+            <span class="system-stat-label">RAM</span>
             <div class="stat-progress-bar">
-              <div id="ram-loader" style="width: 38%;"></div>
+              <div id="ram-usage-progress-bar"></div>
             </div>
           </div>
-
         </div>
+      </section>
 
-      </div>
+    </nav>
 
-    </div>
+  </main>
 
-  </div>
-
-  <!-- Shown during restart or shutdown -->
-  <div id="shutdown-screen" class="system-overlay hidden">
+  <!-- System Shutdown & Restart Transition Overlay -->
+  <section id="shutdown-screen" class="system-overlay hidden">
     <div class="shutdown-content">
-
-      <!-- Small animation makes the transition feel less abrupt -->
       <div class="shutdown-icon-animate">
-        <i class="fa-solid fa-power-off"></i>
+        <i class="fa-solid fa-power-off" aria-hidden="true"></i>
       </div>
-
-      <!-- Message changes depending on the action -->
-      <h2 id="shutdown-text">Shutting down...</h2>
-
+      <h2 id="shutdown-status-text">Shutting down...</h2>
       <p>Please wait a moment.</p>
-
     </div>
-  </div>
+  </section>
 
-  <!-- Loaded last so the DOM is already available -->
+  <!-- Load JavaScript core application logic -->
   <script src="app.js"></script>
 
 </body>
