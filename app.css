@@ -1,57 +1,48 @@
 /* ============================================================
-
-The ZENZEI OS stylesheet is what makes ZENZEI OS look the way it does. It has all the rules for how everything should look. 
-The stylesheet starts with some rules that everything else follows, like colors and fonts. Then it sets up the desktop and how Windows works on ZENZEI OS. It also defines how applications look on ZENZEI OS the taskbar on ZENZEI OS the start menu on ZENZEI OS and some extra visual effects like overlays and animations, on ZENZEI OS. 
-This stylesheet is organized in a way that makes it easy to find what you need and make changes to ZENZEI OS without messing everything up.
-The goal is to make ZENZEI OS look sleek and modern like glass and the same everywhere you look at ZENZEI OS. Thats all from me now!
-
    ZENZEI OS — Main Stylesheet
-  
 
    Table of Contents
    -----------------
    1. CSS Custom Properties (Design Tokens)
-   2. Reset & Base
-   3. Scrollbar
+   2. Reset & Base Styles
+   3. Custom Scrollbars
    4. Utility Classes
-   5. Common Buttons
-   6. System Overlays (Boot Screen & Lock Screen)
-   7. Desktop & Shortcut Icons
-   8. Window System
-   9. Application UIs
+   5. Reusable Controls & Buttons
+   6. System Overlays (Boot & Lock Screen)
+   7. Desktop & App Shortcuts
+   8. Window Management System
+   9. Embedded App Styles
       a. Cosmic Terminal
       b. Nebula Notes
       c. Cosmic Asteroids Game
       d. Stellar Draw
       e. Orion Settings
       f. Space Explorer
-   10. Taskbar & Start Menu
-   11. Shutdown Overlay
-   12. Animations
+   10. Taskbar & Start Menu Launcher
+   11. Shutdown & Power Transition Screen
+   12. Keyframe Animations
 ============================================================ */
 
 
 /* ============================================================
-   1. CSS CUSTOM PROPERTIES
+   1. CSS CUSTOM PROPERTIES (DESIGN TOKENS)
 ============================================================ */
-
-/* Keeping all theme values here makes experimenting with different looks much easier later. */
 :root {
-  /* Color palette */
-  --space-obsidian:   #05050b;
-  --space-dark:       #0a0a14;
-  --nebula-purple:    #48148b;
-  --nebula-magenta:   #7010a3;
-  --neon-cyan:        #00f3ff;
-  --neon-blue:        #0d6efd;
-  --neon-pink:        #ff007f;
-  --neon-purple:      #bd00ff;
-  --gold:             #ffc107;
-  --green:            #2ecc71;
-  --starlight:        #f5f6fa;
-  --starlight-dim:    rgba(245, 246, 250, 0.7);
+  /* Core Color Palette */
+  --space-obsidian:     #05050b;
+  --space-dark:         #0a0a14;
+  --nebula-purple:      #48148b;
+  --nebula-magenta:     #7010a3;
+  --neon-cyan:          #00f3ff;
+  --neon-blue:          #0d6efd;
+  --neon-pink:          #ff007f;
+  --neon-purple:        #bd00ff;
+  --gold:               #ffc107;
+  --green:              #2ecc71;
+  --starlight:          #f5f6fa;
+  --starlight-dim:      rgba(245, 246, 250, 0.7);
 
-  /* Glassmorphism */
+  /* Glassmorphism System */
   --glass-bg:           rgba(10, 10, 22, 0.65);
   --glass-bg-hover:     rgba(20, 20, 40, 0.80);
   --glass-border:       rgba(255, 255, 255, 0.08);
@@ -59,7 +50,7 @@ The goal is to make ZENZEI OS look sleek and modern like glass and the same ever
   --glass-shadow:       0 8px 32px 0 rgba(0, 0, 0, 0.5);
   --glass-blur:         blur(12px);
 
-  /* Typography */
+  /* Typography Stack */
   --font-sans:  'Inter', sans-serif;
   --font-mono:  'Fira Code', 'Courier New', monospace;
   --font-logo:  'Orbitron', sans-serif;
@@ -67,10 +58,8 @@ The goal is to make ZENZEI OS look sleek and modern like glass and the same ever
 
 
 /* ============================================================
-   2. RESET & BASE
+   2. RESET & BASE STYLES
 ============================================================ */
-
-/* Basic cleanup before any component styles start building on top of this. */
 *,
 *::before,
 *::after {
@@ -79,8 +68,6 @@ The goal is to make ZENZEI OS look sleek and modern like glass and the same ever
   padding: 0;
   user-select: none;
 }
-
-/* The whole UI behaves like a desktop, so scrolling is intentionally disabled. */
 
 body {
   font-family: var(--font-sans);
@@ -92,54 +79,62 @@ body {
   position: relative;
 }
 
-/* Starfield canvas — always behind everything */
-#starfield {
+/* Background Canvas & Atmospheric Overlay */
+#starfield-canvas {
   position: fixed;
   inset: 0;
   z-index: -2;
   pointer-events: none;
 }
 
-/* Nebula colour overlay -
- Just adds a little depth over the stars without getting in the way. */
 #nebula-overlay {
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(circle at 80% 20%, rgba(72,  20, 139, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(72, 20, 139, 0.15) 0%, transparent 50%),
     radial-gradient(circle at 20% 80%, rgba(112, 16, 163, 0.15) 0%, transparent 60%);
   transition: background 2s ease;
 }
 
 
 /* ============================================================
-   3. CUSTOM SCROLLBAR
+   3. CUSTOM SCROLLBARS
 ============================================================ */
-::-webkit-scrollbar       { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.15); }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+}
+
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-cyan);
+}
 
 
 /* ============================================================
    4. UTILITY CLASSES
 ============================================================ */
-.hidden         { display: none !important; }
-.text-green     { color: var(--green); }
-.text-cyan      { color: var(--neon-cyan); }
-.text-violet    { color: #a985ff; }
-.text-pink      { color: var(--neon-pink); }
-.text-orange    { color: #ff7f50; }
-.text-gold      { color: var(--gold); }
+.hidden       { display: none !important; }
+.text-green   { color: var(--green); }
+.text-cyan    { color: var(--neon-cyan); }
+.text-violet  { color: #a985ff; }
+.text-pink    { color: var(--neon-pink); }
+.text-orange  { color: #ff7f50; }
+.text-gold    { color: var(--gold); }
 
 
 /* ============================================================
-   5. COMMON BUTTONS
+   5. REUSABLE CONTROLS & BUTTONS
 ============================================================ */
 .btn-galaxy {
   background: linear-gradient(135deg, var(--nebula-purple) 0%, var(--neon-blue) 100%);
@@ -158,19 +153,21 @@ body {
   box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
   transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
+
 .btn-galaxy:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 243, 255, 0.5);
   border-color: var(--neon-cyan);
 }
-.btn-galaxy:active { transform: translateY(0); }
+
+.btn-galaxy:active {
+  transform: translateY(0);
+}
 
 
 /* ============================================================
-   6. SYSTEM OVERLAYS — BOOT SCREEN & LOCK SCREEN
+   6. SYSTEM OVERLAYS (BOOT & LOCK SCREEN)
 ============================================================ */
-
-/* Shared overlay shell */
 .system-overlay {
   position: fixed;
   inset: 0;
@@ -183,8 +180,10 @@ body {
   transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
-/* ── Boot Screen ── */
-#bootloader { background-color: #030307; }
+/* Bootloader */
+#bootloader-screen {
+  background-color: #030307;
+}
 
 .boot-logo-container {
   display: flex;
@@ -210,7 +209,10 @@ body {
   color: white;
   text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
 }
-.boot-title span { color: var(--neon-cyan); }
+
+.boot-title span {
+  color: var(--neon-cyan);
+}
 
 .boot-progress-wrapper {
   width: 280px;
@@ -237,7 +239,7 @@ body {
   letter-spacing: 1px;
 }
 
-/* ── Lock Screen ── */
+/* Lockscreen */
 #lockscreen {
   background: radial-gradient(circle at center, rgba(13, 13, 30, 0.8) 0%, #030307 100%);
   backdrop-filter: var(--glass-blur);
@@ -249,7 +251,7 @@ body {
   animation: float-slow 8s infinite alternate ease-in-out;
 }
 
-#lockscreen-time {
+#lockscreen-current-time {
   font-family: var(--font-logo);
   font-size: 6rem;
   font-weight: 900;
@@ -258,7 +260,7 @@ body {
   line-height: 1;
 }
 
-#lockscreen-date {
+#lockscreen-current-date {
   font-size: 1.2rem;
   letter-spacing: 4px;
   text-transform: uppercase;
@@ -287,6 +289,7 @@ body {
   background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
   margin-bottom: 20px;
 }
+
 .user-avatar {
   width: 100%;
   height: 100%;
@@ -294,7 +297,7 @@ body {
   object-fit: cover;
 }
 
-.user-name {
+.user-display-name {
   font-weight: 600;
   font-size: 1.1rem;
   margin-bottom: 25px;
@@ -310,9 +313,9 @@ body {
 
 
 /* ============================================================
-   7. DESKTOP & SHORTCUT ICONS
+   7. DESKTOP & APP SHORTCUTS
 ============================================================ */
-#desktop {
+#desktop-workspace {
   width: 100%;
   height: calc(100vh - 48px);
   position: relative;
@@ -331,20 +334,22 @@ body {
   z-index: 10;
 }
 
-.shortcut {
+.shortcut-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100px;
   height: 100px;
+  background: transparent;
   border-radius: 12px;
   cursor: pointer;
   text-align: center;
   border: 1px solid transparent;
   transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
-.shortcut:hover {
+
+.shortcut-item:hover {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -363,26 +368,28 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.shortcut:hover .shortcut-icon-wrapper {
+
+.shortcut-item:hover .shortcut-icon-wrapper {
   transform: scale(1.1) translateY(-2px);
 }
 
-/* Per-app icon themes */
-.terminal-theme  { background: linear-gradient(135deg, #111 0%, #333 100%);                   border: 1px solid rgba(0,   243, 255, 0.3); }
-.notes-theme     { background: linear-gradient(135deg, var(--nebula-purple) 0%, #6f42c1 100%); border: 1px solid rgba(169, 133, 255, 0.3); }
-.game-theme      { background: linear-gradient(135deg, #5b1414 0%, #fd7e14 100%);              border: 1px solid rgba(253, 126, 20,  0.3); }
-.draw-theme      { background: linear-gradient(135deg, #7010a3 0%, var(--neon-pink) 100%);    border: 1px solid rgba(255, 0,   127, 0.3); }
-.explorer-theme  { background: linear-gradient(135deg, #0f5132 0%, var(--green) 100%);        border: 1px solid rgba(46,  204, 113, 0.3); }
-.settings-theme  { background: linear-gradient(135deg, #444 0%, var(--gold) 100%);            border: 1px solid rgba(255, 193, 7,   0.3); }
+/* Individual App Icon Color Schemes */
+.terminal-theme { background: linear-gradient(135deg, #111 0%, #333 100%); border: 1px solid rgba(0, 243, 255, 0.3); }
+.notes-theme    { background: linear-gradient(135deg, var(--nebula-purple) 0%, #6f42c1 100%); border: 1px solid rgba(169, 133, 255, 0.3); }
+.game-theme     { background: linear-gradient(135deg, #5b1414 0%, #fd7e14 100%); border: 1px solid rgba(253, 126, 20, 0.3); }
+.draw-theme     { background: linear-gradient(135deg, #7010a3 0%, var(--neon-pink) 100%); border: 1px solid rgba(255, 0, 127, 0.3); }
+.explorer-theme { background: linear-gradient(135deg, #0f5132 0%, var(--green) 100%); border: 1px solid rgba(46, 204, 113, 0.3); }
+.settings-theme { background: linear-gradient(135deg, #444 0%, var(--gold) 100%); border: 1px solid rgba(255, 193, 7, 0.3); }
 
-.shortcut:hover .terminal-theme  { box-shadow: 0 0 15px rgba(0,   243, 255, 0.6); }
-.shortcut:hover .notes-theme     { box-shadow: 0 0 15px rgba(169, 133, 255, 0.6); }
-.shortcut:hover .game-theme      { box-shadow: 0 0 15px rgba(253, 126, 20,  0.6); }
-.shortcut:hover .draw-theme      { box-shadow: 0 0 15px rgba(255, 0,   127, 0.6); }
-.shortcut:hover .explorer-theme  { box-shadow: 0 0 15px rgba(46,  204, 113, 0.6); }
-.shortcut:hover .settings-theme  { box-shadow: 0 0 15px rgba(255, 193, 7,   0.6); }
+.shortcut-item:hover .terminal-theme { box-shadow: 0 0 15px rgba(0, 243, 255, 0.6); }
+.shortcut-item:hover .notes-theme    { box-shadow: 0 0 15px rgba(169, 133, 255, 0.6); }
+.shortcut-item:hover .game-theme     { box-shadow: 0 0 15px rgba(253, 126, 20, 0.6); }
+.shortcut-item:hover .draw-theme     { box-shadow: 0 0 15px rgba(255, 0, 127, 0.6); }
+.shortcut-item:hover .explorer-theme { box-shadow: 0 0 15px rgba(46, 204, 113, 0.6); }
+.shortcut-item:hover .settings-theme { box-shadow: 0 0 15px rgba(255, 193, 7, 0.6); }
 
 .shortcut-label {
+  color: var(--starlight);
   font-size: 0.75rem;
   font-weight: 500;
   letter-spacing: 0.5px;
@@ -395,15 +402,15 @@ body {
 
 
 /* ============================================================
-   8. WINDOW SYSTEM
+   8. WINDOW MANAGEMENT SYSTEM
 ============================================================ */
-#windows-container {
+#active-windows-container {
   width: 100%;
   height: 100%;
   position: absolute;
   top: 0;
   left: 0;
-  pointer-events: none; /* windows themselves re-enable pointer events */
+  pointer-events: none;
 }
 
 .window {
@@ -424,20 +431,17 @@ body {
   transition: opacity 0.15s ease-out, transform 0.15s ease-out;
 }
 
-/* Focused window gets a glowing cyan border */
 .window.active-window {
   border-color: var(--glass-border-active);
   box-shadow: 0 12px 40px rgba(0, 243, 255, 0.15), var(--glass-shadow);
 }
 
-/* Minimised: shrink and fade out toward the taskbar */
 .window.minimized {
   opacity: 0;
   transform: scale(0.8) translateY(100px);
   pointer-events: none;
 }
 
-/* Maximised: fill the desktop area above the taskbar */
 .window.maximized {
   top: 0 !important;
   left: 0 !important;
@@ -447,7 +451,7 @@ body {
   border: none;
 }
 
-/* ── Window Titlebar ── */
+/* Window Titlebar */
 .window-titlebar {
   height: 38px;
   background: rgba(255, 255, 255, 0.03);
@@ -470,13 +474,17 @@ body {
   align-items: center;
   gap: 8px;
 }
+
 .active-window .window-title {
   color: var(--starlight);
   text-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
 }
 
-/* Traffic-light window control buttons */
-.window-actions { display: flex; align-items: center; gap: 8px; }
+.window-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
 .win-btn {
   width: 14px;
@@ -491,19 +499,20 @@ body {
   color: transparent;
   transition: all 0.2s ease;
 }
-.win-btn:hover { color: rgba(0, 0, 0, 0.6); }
+
+.win-btn:hover {
+  color: rgba(0, 0, 0, 0.6);
+}
 
 .win-btn-minimize { background-color: #ffbd2e; }
 .win-btn-maximize { background-color: #27c93f; }
 .win-btn-close    { background-color: #ff5f56; }
 
-/* FontAwesome icons via pseudo-element */
 .win-btn-minimize::before { content: "\f068"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
 .win-btn-maximize::before { content: "\f065"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
 .window.maximized .win-btn-maximize::before { content: "\f066"; }
 .win-btn-close::before    { content: "\f00d"; font-family: "Font Awesome 6 Free"; font-weight: 900; }
 
-/* ── Window Content Area ── */
 .window-content {
   flex: 1;
   position: relative;
@@ -511,7 +520,6 @@ body {
   background: rgba(4, 4, 8, 0.3);
 }
 
-/* Drag-to-resize handle (bottom-right corner) */
 .window-resizer {
   position: absolute;
   width: 10px;
@@ -524,14 +532,14 @@ body {
 
 
 /* ============================================================
-   9. APPLICATION UIs
+   9. EMBEDDED APP STYLES
 ============================================================ */
 
-/* ── a. Cosmic Terminal ── */
+/* a. Cosmic Terminal */
 .terminal-app {
   background-color: #030307;
   font-family: var(--font-mono);
-  color: #39ff14; /* classic terminal green */
+  color: #39ff14;
   padding: 16px;
   height: 100%;
   display: flex;
@@ -574,8 +582,7 @@ body {
   caret-color: var(--neon-cyan);
 }
 
-
-/* ── b. Nebula Notes ── */
+/* b. Nebula Notes */
 .notes-app {
   display: flex;
   flex-direction: column;
@@ -609,6 +616,7 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
 .notes-btn-save:hover {
   background: rgba(0, 243, 255, 0.3);
   box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
@@ -627,8 +635,7 @@ body {
   resize: none;
 }
 
-
-/* ── c. Cosmic Asteroids ── */
+/* c. Cosmic Asteroids Game */
 .asteroids-app {
   background: #020205;
   height: 100%;
@@ -688,8 +695,7 @@ body {
   line-height: 1.6;
 }
 
-
-/* ── d. Stellar Draw ── */
+/* d. Stellar Draw */
 .draw-app {
   display: flex;
   height: 100%;
@@ -725,6 +731,7 @@ body {
   border: none;
   cursor: pointer;
 }
+
 .draw-color-picker::-webkit-color-swatch {
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.3);
@@ -743,6 +750,7 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
+
 .draw-brush-icon.active-tool {
   background: var(--neon-pink);
   color: white;
@@ -775,6 +783,7 @@ body {
   font-size: 0.9rem;
   transition: all 0.2s ease;
 }
+
 .draw-btn-clear:hover { background: #dc3545; color: white; box-shadow: 0 0 10px rgba(220, 53, 69, 0.5); }
 .draw-btn-save:hover  { background: var(--neon-cyan); color: #000; box-shadow: 0 0 10px var(--neon-cyan); }
 
@@ -789,8 +798,7 @@ body {
   cursor: crosshair;
 }
 
-
-/* ── e. Orion Settings ── */
+/* e. Orion Settings */
 .settings-app {
   padding: 20px;
   background: #090911;
@@ -798,7 +806,9 @@ body {
   overflow-y: auto;
 }
 
-.settings-section { margin-bottom: 25px; }
+.settings-section {
+  margin-bottom: 25px;
+}
 
 .settings-heading {
   font-family: var(--font-logo);
@@ -835,10 +845,12 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   transition: all 0.2s ease;
 }
+
 .wallpaper-card.active-wallpaper {
   border-color: var(--neon-cyan);
   box-shadow: 0 0 10px var(--neon-cyan);
 }
+
 .wallpaper-card span {
   position: absolute;
   bottom: 0;
@@ -850,14 +862,18 @@ body {
   text-align: center;
 }
 
-/* Toggle switch */
 .settings-toggle {
   position: relative;
   display: inline-block;
   width: 44px;
   height: 22px;
 }
-.settings-toggle input { opacity: 0; width: 0; height: 0; }
+
+.settings-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 
 .slider-switch {
   position: absolute;
@@ -867,6 +883,7 @@ body {
   cursor: pointer;
   transition: 0.4s;
 }
+
 .slider-switch::before {
   content: "";
   position: absolute;
@@ -878,11 +895,16 @@ body {
   border-radius: 50%;
   transition: 0.4s;
 }
-input:checked + .slider-switch                { background-color: var(--neon-cyan); }
-input:checked + .slider-switch::before        { transform: translateX(22px); }
 
+input:checked + .slider-switch {
+  background-color: var(--neon-cyan);
+}
 
-/* ── f. Space Explorer ── */
+input:checked + .slider-switch::before {
+  transform: translateX(22px);
+}
+
+/* f. Space Explorer */
 .explorer-app {
   display: flex;
   height: 100%;
@@ -907,10 +929,12 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   border-left: 3px solid transparent;
   transition: all 0.2s ease;
 }
+
 .explorer-list-item:hover {
   background: rgba(255, 255, 255, 0.02);
   color: var(--starlight);
 }
+
 .explorer-list-item.active-item {
   color: var(--neon-cyan);
   border-left-color: var(--neon-cyan);
@@ -953,10 +977,12 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   border-collapse: collapse;
   font-size: 0.8rem;
 }
+
 .explorer-meta-table td {
   padding: 8px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
+
 .explorer-meta-table td:first-child {
   color: var(--neon-cyan);
   width: 40%;
@@ -964,9 +990,9 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
 
 
 /* ============================================================
-   10. TASKBAR & START MENU
+   10. TASKBAR & START MENU LAUNCHER
 ============================================================ */
-#taskbar {
+#system-taskbar {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -983,8 +1009,7 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   z-index: 1000;
 }
 
-/* Start Button */
-#start-button {
+#start-menu-toggle-button {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -993,10 +1018,12 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   cursor: pointer;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--starlight);
   transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
   flex-shrink: 0;
 }
-#start-button:hover {
+
+#start-menu-toggle-button:hover {
   background: rgba(0, 243, 255, 0.15);
   border-color: var(--neon-cyan);
   box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
@@ -1015,8 +1042,7 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   letter-spacing: 1px;
 }
 
-/* Running-app pins strip */
-#taskbar-apps-container {
+#active-apps-taskbar-container {
   flex: 1;
   margin: 0 20px;
   display: flex;
@@ -1045,10 +1071,12 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
 .taskbar-app-pin:hover {
   background: rgba(255, 255, 255, 0.06);
   color: var(--starlight);
 }
+
 .taskbar-app-pin.active-pin {
   background: rgba(0, 243, 255, 0.1);
   border-color: rgba(0, 243, 255, 0.3);
@@ -1066,15 +1094,20 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   flex-shrink: 0;
 }
 
-.tray-icon {
+.tray-icon-button {
   cursor: pointer;
   padding: 6px;
   border-radius: 4px;
+  background: transparent;
+  border: none;
+  color: var(--starlight-dim);
   display: flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
-.tray-icon:hover {
+
+.tray-icon-button:hover {
   background: rgba(255, 255, 255, 0.05);
   color: var(--starlight);
 }
@@ -1093,8 +1126,8 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   padding: 4px;
 }
 
-/* Start Menu panel */
-#start-menu {
+/* Start Menu Panel */
+#start-menu-launcher {
   position: absolute;
   bottom: 58px;
   left: 12px;
@@ -1138,7 +1171,11 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   margin-bottom: 10px;
 }
 
-.start-username  { font-weight: 600; font-size: 0.85rem; }
+.start-username {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
 .start-user-status {
   font-size: 0.65rem;
   color: var(--starlight-dim);
@@ -1170,6 +1207,7 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   gap: 8px;
   transition: all 0.2s ease;
 }
+
 .start-sidebar-item:hover {
   background: rgba(255, 255, 255, 0.03);
   color: white;
@@ -1195,10 +1233,11 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   justify-content: center;
   transition: all 0.2s ease;
 }
+
 .btn-start-action:hover { color: white; background: rgba(255, 255, 255, 0.08); }
-#btn-shutdown-os:hover  { background: #dc3545; color: white; box-shadow: 0 0 10px rgba(220, 53, 69, 0.4); }
-#btn-restart-os:hover   { background: var(--gold); color: black; box-shadow: 0 0 10px rgba(255, 193, 7, 0.4); }
-#btn-lock-os:hover      { background: var(--neon-cyan); color: black; box-shadow: 0 0 10px rgba(0, 243, 255, 0.4); }
+#shutdown-system-button:hover { background: #dc3545; color: white; box-shadow: 0 0 10px rgba(220, 53, 69, 0.4); }
+#restart-system-button:hover  { background: var(--gold); color: black; box-shadow: 0 0 10px rgba(255, 193, 7, 0.4); }
+#lock-system-button:hover     { background: var(--neon-cyan); color: black; box-shadow: 0 0 10px rgba(0, 243, 255, 0.4); }
 
 .start-menu-main {
   flex: 1;
@@ -1236,6 +1275,7 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   border: 1px solid transparent;
   transition: background-color 0.2s ease;
 }
+
 .start-app-item:hover {
   background: rgba(255, 255, 255, 0.03);
   border-color: rgba(255, 255, 255, 0.05);
@@ -1248,11 +1288,11 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   text-align: center;
 }
 
-.start-app-info    { display: flex; flex-direction: column; }
-.start-app-name    { font-size: 0.75rem; font-weight: 600; }
-.start-app-desc    { font-size: 0.6rem; color: var(--starlight-dim); }
+.start-app-info { display: flex; flex-direction: column; }
+.start-app-name { font-size: 0.75rem; font-weight: 600; }
+.start-app-desc { font-size: 0.6rem; color: var(--starlight-dim); }
 
-/* CPU / RAM meters */
+/* Start Menu Metrics */
 .start-system-stats {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 12px;
@@ -1269,7 +1309,9 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   font-size: 0.65rem;
 }
 
-.stat-lbl { color: var(--starlight-dim); }
+.system-stat-label {
+  color: var(--starlight-dim);
+}
 
 .stat-progress-bar {
   width: 120px;
@@ -1278,6 +1320,7 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   border-radius: 2px;
   overflow: hidden;
 }
+
 .stat-progress-bar div {
   height: 100%;
   background: var(--neon-cyan);
@@ -1294,7 +1337,9 @@ input:checked + .slider-switch::before        { transform: translateX(22px); }
   z-index: 10000;
 }
 
-.shutdown-content { text-align: center; }
+.shutdown-content {
+  text-align: center;
+}
 
 .shutdown-icon-animate {
   font-size: 3.5rem;
