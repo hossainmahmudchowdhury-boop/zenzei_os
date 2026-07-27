@@ -268,8 +268,8 @@ function initStarfield() {
     // Draw and age shooting stars
     for (let i = shootingStars.length - 1; i >= 0; i--) {
       const s = shootingStars[i];
-      s.x    += s.vx;
-      s.y    += s.vy;
+      s.x     += s.vx;
+      s.y     += s.vy;
       s.alpha -= 0.04;
 
       if (s.alpha <= 0) {
@@ -859,8 +859,8 @@ function buildTerminal(container) {
   ╚════██║██╔════╝████╗ ██║╚════██║██╔════╝██║
       ██╔╝█████╗  ██╔██╗██║    ██╔╝█████╗  ██║
      ██╔╝ ██╔══╝  ██║╚████║   ██╔╝ ██╔══╝  ██║
-     ██║  ███████╗██║ ╚███║   ██║  ███████╗██║
-     ╚═╝  ╚══════╝╚═╝  ╚══╝   ╚═╝  ╚══════╝╚═╝
+    ██║   ███████╗██║ ╚███║  ██║   ███████╗██║
+    ╚═╝   ╚══════╝╚═╝  ╚══╝  ╚═╝   ╚══════╝╚═╝
   </span>`);
   printLine('ZenZei OS Terminal v1.0   type "help" for commands.');
   printLine('');
@@ -870,16 +870,16 @@ function buildTerminal(container) {
 
     help() {
       printLine('Available commands:');
-      printLine('  help       — show this list');
-      printLine('  clear      — clear the terminal');
-      printLine('  date       — print current date & time');
-      printLine('  whoami     — display current user');
-      printLine('  uname      — system information');
-      printLine('  ls         — list virtual files');
-      printLine('  echo <msg> — print a message');
-      printLine('  uptime     — time since boot');
-      printLine('  apps       — list installed apps');
-      printLine('  open <app> — launch an app');
+      printLine('  help        — show this list');
+      printLine('  clear       — clear the terminal');
+      printLine('  date        — print current date & time');
+      printLine('  whoami      — display current user');
+      printLine('  uname       — system information');
+      printLine('  ls          — list virtual files');
+      printLine('  echo <msg>  — print a message');
+      printLine('  uptime      — time since boot');
+      printLine('  apps        — list installed apps');
+      printLine('  open <app>  — launch an app');
     },
 
     clear() {
@@ -946,7 +946,7 @@ function buildTerminal(container) {
 
     if (e.key !== 'Enter') return;
 
-    const raw  = input.value.trim();
+    const raw   = input.value.trim();
     input.value = '';
     historyIdx  = -1;
 
@@ -1074,14 +1074,14 @@ function buildAsteroids(container, appId) {
 
   function createShip() {
     return {
-      x:     canvas.width  / 2,
-      y:     canvas.height / 2,
-      angle: -Math.PI / 2,      // pointing up
-      vx:    0,
-      vy:    0,
-      thrusting:     false,
-      invincible:    true,
-      invincibleTime: 180,       // frames
+      x:              canvas.width  / 2,
+      y:              canvas.height / 2,
+      angle:          -Math.PI / 2,      // pointing up
+      vx:             0,
+      vy:             0,
+      thrusting:      false,
+      invincible:     true,
+      invincibleTime: 180,               // frames
     };
   }
 
@@ -1099,9 +1099,9 @@ function buildAsteroids(container, appId) {
 
       state.asteroids.push({
         x, y,
-        vx:     Math.cos(angle) * speed,
-        vy:     Math.sin(angle) * speed,
-        radius: 35 + Math.random() * 20,
+        vx:       Math.cos(angle) * speed,
+        vy:       Math.sin(angle) * speed,
+        radius:   35 + Math.random() * 20,
         vertices: 7 + Math.floor(Math.random() * 5),
         offsets:  Array.from({ length: 12 }, () => 0.8 + Math.random() * 0.4),
       });
@@ -1127,311 +1127,259 @@ function buildAsteroids(container, appId) {
 
   function updateHUD() {
     scoreEl.textContent = `Score: ${state.score}`;
-    livesEl.textContent = `Lives: ${'♥ '.repeat(state.lives).trim()}`;
+    livesEl.textContent = `Lives: ${'♥ '.repeat(Math.max(0, state.lives)).trim()}`;
     levelEl.textContent = `Level: ${state.level}`;
   }
 
-  function gameLoop() {
-    state.loopId = requestAnimationFrame(gameLoop);
-
-    if (state.paused) return;
-
-    update();
-    render();
-  }
-
-  // Store loop id so closeWindow can cancel it
-  startBtn.addEventListener('click', () => {
-    startGame();
-    OS.runningApps[appId].gameLoopId = state.loopId;
-  });
-
-  // ── Input ──
-  container.addEventListener('keydown', e => { state.keys[e.code] = true; });
-  container.addEventListener('keyup',   e => { state.keys[e.code] = false; });
-
-  // Also listen globally while this app is active
-  function onKeyDown(e) {
+  // Key controls
+  const handleKeyDown = e => {
     if (OS.activeAppId !== appId) return;
     state.keys[e.code] = true;
-
-    if (e.code === 'Space' && state.running && !state.paused) {
-      fireBullet();
-      e.preventDefault();
-    }
 
     if (e.code === 'KeyP' && state.running) {
       state.paused = !state.paused;
     }
+
+    if (e.code === 'Space' && state.running && !state.paused) {
+      // Fire bullet
+      const noseX = state.ship.x + Math.cos(state.ship.angle) * 15;
+      const noseY = state.ship.y + Math.sin(state.ship.angle) * 15;
+      state.bullets.push({
+        x: noseX,
+        y: noseY,
+        vx: state.ship.vx + Math.cos(state.ship.angle) * 7,
+        vy: state.ship.vy + Math.sin(state.ship.angle) * 7,
+        life: 60,
+      });
+      playSystemSound('laser');
+    }
+  };
+
+  const handleKeyUp = e => {
+    state.keys[e.code] = false;
+  };
+
+  window.addEventListener('keydown', handleKeyDown);
+  window.addEventListener('keyup', handleKeyUp);
+
+  // Store cleanup listener for when window closes
+  if (OS.runningApps[appId]) {
+    OS.runningApps[appId].gameLoopId = state.loopId;
   }
 
-  function onKeyUp(e) { state.keys[e.code] = false; }
+  startBtn.addEventListener('click', startGame);
 
-  document.addEventListener('keydown', onKeyDown);
-  document.addEventListener('keyup',   onKeyUp);
-
-  // Cleanup listeners when window closes
-  const origClose = closeWindow;
-  // (cleanup is handled via the gameLoopId stored above)
-
-  let lastShot = 0;
-
-  function fireBullet() {
-    const now = Date.now();
-    if (now - lastShot < 250) return;   // rate-limit
-    lastShot = now;
-
-    const ship = state.ship;
-    state.bullets.push({
-      x:  ship.x + Math.cos(ship.angle) * 16,
-      y:  ship.y + Math.sin(ship.angle) * 16,
-      vx: Math.cos(ship.angle) * 9 + ship.vx,
-      vy: Math.sin(ship.angle) * 9 + ship.vy,
-      life: 55,
-    });
+  function explode(x, y, count = 15, color = '#ff0055') {
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1 + Math.random() * 4;
+      state.particles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        alpha: 1,
+        color,
+      });
+    }
   }
 
-  // ── Update ──
   function update() {
-
     const ship = state.ship;
-    const DRAG = 0.98;
-    const THRUST = 0.25;
-    const ROT   = 0.055;
 
-    // Rotate
-    if (state.keys['ArrowLeft']  || state.keys['KeyA']) ship.angle -= ROT;
-    if (state.keys['ArrowRight'] || state.keys['KeyD']) ship.angle += ROT;
+    // Ship Rotation
+    if (state.keys['ArrowLeft'] || state.keys['KeyA']) ship.angle -= 0.08;
+    if (state.keys['ArrowRight'] || state.keys['KeyD']) ship.angle += 0.08;
 
-    // Thrust
+    // Ship Thrust
     ship.thrusting = state.keys['ArrowUp'] || state.keys['KeyW'];
     if (ship.thrusting) {
-      ship.vx += Math.cos(ship.angle) * THRUST;
-      ship.vy += Math.sin(ship.angle) * THRUST;
+      ship.vx += Math.cos(ship.angle) * 0.15;
+      ship.vy += Math.sin(ship.angle) * 0.15;
+
+      // Exhaust particles
+      state.particles.push({
+        x: ship.x - Math.cos(ship.angle) * 12,
+        y: ship.y - Math.sin(ship.angle) * 12,
+        vx: -Math.cos(ship.angle) * 2 + (Math.random() - 0.5),
+        vy: -Math.sin(ship.angle) * 2 + (Math.random() - 0.5),
+        alpha: 0.8,
+        color: '#00f3ff',
+      });
     }
 
-    // Speed limit
-    const speed = Math.hypot(ship.vx, ship.vy);
-    if (speed > 7) {
-      ship.vx = (ship.vx / speed) * 7;
-      ship.vy = (ship.vy / speed) * 7;
-    }
+    // Drag / Friction
+    ship.vx *= 0.985;
+    ship.vy *= 0.985;
 
-    ship.vx *= DRAG;
-    ship.vy *= DRAG;
+    // Move Ship
+    ship.x += ship.vx;
+    ship.y += ship.vy;
 
-    ship.x = (ship.x + ship.vx + canvas.width)  % canvas.width;
-    ship.y = (ship.y + ship.vy + canvas.height)  % canvas.height;
+    // Screen Wrap (Ship)
+    if (ship.x < 0) ship.x = canvas.width;
+    if (ship.x > canvas.width) ship.x = 0;
+    if (ship.y < 0) ship.y = canvas.height;
+    if (ship.y > canvas.height) ship.y = 0;
 
-    // Invincibility timer
-    if (ship.invincible) {
-      ship.invincibleTime--;
-      if (ship.invincibleTime <= 0) ship.invincible = false;
-    }
+    if (ship.invincibleTime > 0) ship.invincibleTime--;
 
-    // Bullets
+    // Update Bullets
     for (let i = state.bullets.length - 1; i >= 0; i--) {
       const b = state.bullets[i];
-      b.x    = (b.x + b.vx + canvas.width)  % canvas.width;
-      b.y    = (b.y + b.vy + canvas.height) % canvas.height;
+      b.x += b.vx;
+      b.y += b.vy;
       b.life--;
+
+      if (b.x < 0) b.x = canvas.width;
+      if (b.x > canvas.width) b.x = 0;
+      if (b.y < 0) b.y = canvas.height;
+      if (b.y > canvas.height) b.y = 0;
+
       if (b.life <= 0) state.bullets.splice(i, 1);
     }
 
-    // Asteroids
-    for (const a of state.asteroids) {
-      a.x = (a.x + a.vx + canvas.width)  % canvas.width;
-      a.y = (a.y + a.vy + canvas.height) % canvas.height;
+    // Update Particles
+    for (let i = state.particles.length - 1; i >= 0; i--) {
+      const p = state.particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= 0.02;
+      if (p.alpha <= 0) state.particles.splice(i, 1);
     }
 
-    // Bullet–Asteroid collisions
-    for (let bi = state.bullets.length - 1; bi >= 0; bi--) {
-      const b = state.bullets[bi];
-      for (let ai = state.asteroids.length - 1; ai >= 0; ai--) {
-        const a = state.asteroids[ai];
+    // Update Asteroids & Collisions
+    for (let i = state.asteroids.length - 1; i >= 0; i--) {
+      const a = state.asteroids[i];
+      a.x += a.vx;
+      a.y += a.vy;
+
+      if (a.x < -a.radius) a.x = canvas.width + a.radius;
+      if (a.x > canvas.width + a.radius) a.x = -a.radius;
+      if (a.y < -a.radius) a.y = canvas.height + a.radius;
+      if (a.y > canvas.height + a.radius) a.y = -a.radius;
+
+      // Bullet - Asteroid Collision
+      for (let j = state.bullets.length - 1; j >= 0; j--) {
+        const b = state.bullets[j];
         if (Math.hypot(b.x - a.x, b.y - a.y) < a.radius) {
-          state.bullets.splice(bi, 1);
+          explode(a.x, a.y, 12, '#ffb700');
+          playSystemSound('explosion');
 
-          // Spawn particles
-          for (let p = 0; p < 8; p++) {
-            const ang = Math.random() * Math.PI * 2;
-            state.particles.push({
-              x:     a.x,
-              y:     a.y,
-              vx:    Math.cos(ang) * (1 + Math.random() * 3),
-              vy:    Math.sin(ang) * (1 + Math.random() * 3),
-              life:  30 + Math.random() * 20,
-              alpha: 1,
-            });
-          }
+          state.score += Math.floor(100 / a.radius * 10);
+          state.bullets.splice(j, 1);
 
-          // Split if large enough
+          // Split Asteroid
           if (a.radius > 18) {
             for (let k = 0; k < 2; k++) {
-              const ang = Math.random() * Math.PI * 2;
-              const spd = 1.5 + Math.random() * state.level;
+              const angle = Math.random() * Math.PI * 2;
               state.asteroids.push({
-                x:        a.x,
-                y:        a.y,
-                vx:       Math.cos(ang) * spd,
-                vy:       Math.sin(ang) * spd,
-                radius:   a.radius * 0.55,
-                vertices: 6 + Math.floor(Math.random() * 4),
-                offsets:  Array.from({ length: 12 }, () => 0.8 + Math.random() * 0.4),
+                x: a.x, y: a.y,
+                vx: Math.cos(angle) * (1.5 + state.level),
+                vy: Math.sin(angle) * (1.5 + state.level),
+                radius: a.radius / 2,
+                vertices: 6,
+                offsets: Array.from({ length: 12 }, () => 0.8 + Math.random() * 0.4),
               });
             }
-            state.score += 20;
-          } else {
-            state.score += 50;
           }
 
-          state.asteroids.splice(ai, 1);
+          state.asteroids.splice(i, 1);
           updateHUD();
           break;
         }
       }
-    }
 
-    // Ship–Asteroid collision
-    if (!ship.invincible) {
-      for (const a of state.asteroids) {
-        if (Math.hypot(ship.x - a.x, ship.y - a.y) < a.radius + 10) {
-          state.lives--;
-          updateHUD();
+      // Ship - Asteroid Collision
+      if (ship.invincibleTime <= 0 && Math.hypot(ship.x - a.x, ship.y - a.y) < a.radius + 10) {
+        explode(ship.x, ship.y, 25, '#ff0055');
+        playSystemSound('explosion');
+        state.lives--;
+        updateHUD();
 
-          if (state.lives <= 0) {
-            endGame();
-            return;
-          }
-
-          // Respawn ship
-          state.ship = createShip();
+        if (state.lives <= 0) {
+          state.running = false;
+          menu.classList.remove('hidden');
+          menu.querySelector('.asteroids-title').textContent = 'GAME OVER';
           return;
+        } else {
+          state.ship = createShip();
         }
       }
     }
 
-    // Particles
-    for (let i = state.particles.length - 1; i >= 0; i--) {
-      const p = state.particles[i];
-      p.x    += p.vx;
-      p.y    += p.vy;
-      p.life--;
-      p.alpha = p.life / 50;
-      if (p.life <= 0) state.particles.splice(i, 1);
-    }
-
-    // Next level when all asteroids cleared
+    // Level Cleared
     if (state.asteroids.length === 0) {
       state.level++;
-      spawnAsteroids(3 + state.level);
-      state.score += 100;
+      spawnAsteroids(4 + state.level * 2);
       updateHUD();
     }
   }
 
-  function endGame() {
-    state.running = false;
-    cancelAnimationFrame(state.loopId);
-
-    menu.classList.remove('hidden');
-    menu.innerHTML = `
-      <div class="asteroids-title">GAME OVER</div>
-      <p style="font-size:1.1rem;margin:10px 0;color:var(--neon-cyan)">Score: ${state.score}</p>
-      <p style="font-size:0.8rem;color:var(--starlight-dim);margin-bottom:20px">Level reached: ${state.level}</p>
-      <button class="btn-galaxy" id="ast-start-btn">
-        <i class="fa-solid fa-rotate-right"></i> Try Again
-      </button>
-    `;
-
-    menu.querySelector('#ast-start-btn').addEventListener('click', startGame);
-  }
-
-  // ── Render ──
   function render() {
+    ctx.fillStyle = '#05050a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    // Render Ship
     const ship = state.ship;
-
-    // Ship
-    const blinkVisible = !ship.invincible || Math.floor(Date.now() / 100) % 2 === 0;
-
-    if (blinkVisible) {
+    if (state.running && (ship.invincibleTime % 10 < 5)) {
       ctx.save();
       ctx.translate(ship.x, ship.y);
       ctx.rotate(ship.angle);
-
       ctx.strokeStyle = '#00f3ff';
-      ctx.lineWidth   = 2;
-      ctx.shadowColor = '#00f3ff';
-      ctx.shadowBlur  = 8;
-
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.moveTo(16,  0);
-      ctx.lineTo(-10,  8);
-      ctx.lineTo(-6,  0);
-      ctx.lineTo(-10, -8);
+      ctx.moveTo(15, 0);
+      ctx.lineTo(-10, -10);
+      ctx.lineTo(-5, 0);
+      ctx.lineTo(-10, 10);
       ctx.closePath();
       ctx.stroke();
-
-      // Thruster flame
-      if (ship.thrusting) {
-        ctx.strokeStyle = '#ff7f00';
-        ctx.shadowColor = '#ff7f00';
-        ctx.beginPath();
-        ctx.moveTo(-6,  3);
-        ctx.lineTo(-16 - Math.random() * 6, 0);
-        ctx.lineTo(-6, -3);
-        ctx.stroke();
-      }
-
       ctx.restore();
     }
 
-    // Asteroids
+    // Render Bullets
+    ctx.fillStyle = '#ff0055';
+    for (const b of state.bullets) {
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Render Asteroids
+    ctx.strokeStyle = '#b8c7e0';
+    ctx.lineWidth = 1.5;
     for (const a of state.asteroids) {
       ctx.save();
       ctx.translate(a.x, a.y);
-      ctx.strokeStyle = '#a985ff';
-      ctx.lineWidth   = 2;
-      ctx.shadowColor = '#a985ff';
-      ctx.shadowBlur  = 6;
-
       ctx.beginPath();
-      for (let v = 0; v < a.vertices; v++) {
-        const ang = (v / a.vertices) * Math.PI * 2;
-        const r   = a.radius * a.offsets[v % a.offsets.length];
-        const px  = Math.cos(ang) * r;
-        const py  = Math.sin(ang) * r;
-        v === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      for (let i = 0; i < a.vertices; i++) {
+        const angle = (i / a.vertices) * Math.PI * 2;
+        const r = a.radius * (a.offsets[i] || 1);
+        const x = Math.cos(angle) * r;
+        const y = Math.sin(angle) * r;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
       }
       ctx.closePath();
       ctx.stroke();
       ctx.restore();
     }
 
-    // Bullets
-    for (const b of state.bullets) {
-      ctx.save();
-      ctx.fillStyle   = '#00f3ff';
-      ctx.shadowColor = '#00f3ff';
-      ctx.shadowBlur  = 10;
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-
-    // Particles
+    // Render Particles
     for (const p of state.particles) {
-      ctx.save();
       ctx.globalAlpha = p.alpha;
-      ctx.fillStyle   = '#ffd700';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
+      ctx.fillStyle = p.color;
+      ctx.fillRect(p.x, p.y, 2, 2);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function gameLoop() {
+    if (!state.running) return;
+    state.loopId = requestAnimationFrame(gameLoop);
+    if (!state.paused) {
+      update();
+      render();
     }
   }
 }
@@ -1439,516 +1387,204 @@ function buildAsteroids(container, appId) {
 
 /* ── d. Stellar Draw ── */
 function buildDraw(container) {
-
   container.innerHTML = `
-    <div class="draw-app">
-
-      <div class="draw-sidebar">
-
-        <div class="draw-tool-item">
-          <input type="color" class="draw-color-picker" id="draw-color" value="#00f3ff" title="Brush Colour" />
-        </div>
-
-        <div class="draw-tool-item">
-          <div class="draw-brush-icon active-tool" id="draw-tool-brush" title="Brush">
-            <i class="fa-solid fa-paintbrush"></i>
-          </div>
-        </div>
-
-        <div class="draw-tool-item">
-          <div class="draw-brush-icon" id="draw-tool-eraser" title="Eraser">
-            <i class="fa-solid fa-eraser"></i>
-          </div>
-        </div>
-
-        <div class="draw-tool-item">
-          <input
-            type="range"
-            class="draw-size-slider"
-            id="draw-size"
-            min="1" max="40" value="6"
-            title="Brush Size"
-          />
-        </div>
-
-        <div class="draw-tool-item">
-          <div class="draw-btn-clear" id="draw-clear" title="Clear Canvas">
-            <i class="fa-solid fa-trash"></i>
-          </div>
-        </div>
-
-        <div class="draw-tool-item">
-          <div class="draw-btn-save" id="draw-save" title="Download as PNG">
-            <i class="fa-solid fa-download"></i>
-          </div>
-        </div>
-
+    <div class="draw-app" style="display:flex; flex-direction:column; height:100%; background:#0a0a10;">
+      <div class="draw-toolbar" style="padding:8px; display:flex; gap:10px; background:#12121c; border-bottom:1px solid rgba(255,255,255,0.1); align-items:center;">
+        <input type="color" id="draw-color" value="#00f3ff" style="border:none; background:none; width:28px; height:28px; cursor:pointer;" />
+        <input type="range" id="draw-size" min="1" max="50" value="4" style="width:100px;" />
+        <button id="draw-clear" class="notes-btn-save"><i class="fa-solid fa-trash"></i> Clear</button>
       </div>
-
-      <div class="draw-canvas-container" id="draw-canvas-container">
-        <canvas class="draw-canvas" id="draw-canvas"></canvas>
-      </div>
-
+      <canvas id="draw-canvas" style="flex:1; cursor:crosshair;"></canvas>
     </div>
   `;
 
-  const canvas    = container.querySelector('#draw-canvas');
-  const ctx       = canvas.getContext('2d');
-  const colorPick = container.querySelector('#draw-color');
-  const sizePick  = container.querySelector('#draw-size');
-  const brushBtn  = container.querySelector('#draw-tool-brush');
-  const eraserBtn = container.querySelector('#draw-tool-eraser');
-  const clearBtn  = container.querySelector('#draw-clear');
-  const saveBtn   = container.querySelector('#draw-save');
+  const canvas = container.querySelector('#draw-canvas');
+  const ctx = canvas.getContext('2d');
+  const colorPicker = container.querySelector('#draw-color');
+  const sizePicker = container.querySelector('#draw-size');
+  const clearBtn = container.querySelector('#draw-clear');
 
-  let tool     = 'brush';
-  let painting = false;
-  let lastX    = 0;
-  let lastY    = 0;
-
-  function resizeCanvas() {
+  function resize() {
     const parent = canvas.parentElement;
-    // Preserve existing drawing across resizes
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    canvas.width  = parent.clientWidth;
+    canvas.width = parent.clientWidth;
     canvas.height = parent.clientHeight;
-    ctx.putImageData(imgData, 0, 0);
   }
+  resize();
+  new ResizeObserver(resize).observe(canvas.parentElement);
 
-  resizeCanvas();
-  new ResizeObserver(resizeCanvas).observe(canvas.parentElement);
+  let drawing = false;
 
-  // Fill with dark background so the first save looks good
-  ctx.fillStyle = '#020205';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  function getPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const touch = e.touches ? e.touches[0] : e;
-    return {
-      x: touch.clientX - rect.left,
-      y: touch.clientY - rect.top,
-    };
-  }
-
-  function startDraw(e) {
-    painting = true;
-    const { x, y } = getPos(e);
-    lastX = x;
-    lastY = y;
-  }
-
-  function draw(e) {
-    if (!painting) return;
-    e.preventDefault();
-
-    const { x, y } = getPos(e);
-
-    ctx.lineWidth   = parseInt(sizePick.value, 10);
-    ctx.lineCap     = 'round';
-    ctx.lineJoin    = 'round';
-    ctx.strokeStyle = tool === 'eraser' ? '#020205' : colorPick.value;
-    ctx.globalCompositeOperation = tool === 'eraser' ? 'destination-out' : 'source-over';
-
+  canvas.addEventListener('mousedown', e => {
+    drawing = true;
     ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(x, y);
+    ctx.moveTo(e.offsetX, e.offsetY);
+  });
+
+  canvas.addEventListener('mousemove', e => {
+    if (!drawing) return;
+    ctx.strokeStyle = colorPicker.value;
+    ctx.lineWidth = sizePicker.value;
+    ctx.lineCap = 'round';
+    ctx.lineTo(e.offsetX, e.offsetY);
     ctx.stroke();
-
-    lastX = x;
-    lastY = y;
-  }
-
-  function stopDraw() { painting = false; }
-
-  canvas.addEventListener('mousedown',  startDraw);
-  canvas.addEventListener('mousemove',  draw);
-  canvas.addEventListener('mouseup',    stopDraw);
-  canvas.addEventListener('mouseleave', stopDraw);
-
-  canvas.addEventListener('touchstart', startDraw, { passive: false });
-  canvas.addEventListener('touchmove',  draw,       { passive: false });
-  canvas.addEventListener('touchend',   stopDraw);
-
-  brushBtn.addEventListener('click', () => {
-    tool = 'brush';
-    brushBtn.classList.add('active-tool');
-    eraserBtn.classList.remove('active-tool');
   });
 
-  eraserBtn.addEventListener('click', () => {
-    tool = 'eraser';
-    eraserBtn.classList.add('active-tool');
-    brushBtn.classList.remove('active-tool');
-  });
-
-  clearBtn.addEventListener('click', () => {
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.fillStyle = '#020205';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  });
-
-  saveBtn.addEventListener('click', () => {
-    const link    = document.createElement('a');
-    link.download = `stellar-draw-${Date.now()}.png`;
-    link.href     = canvas.toDataURL('image/png');
-    link.click();
-  });
+  window.addEventListener('mouseup', () => drawing = false);
+  clearBtn.addEventListener('click', () => ctx.clearRect(0, 0, canvas.width, canvas.height));
 }
 
 
 /* ── e. Space Explorer ── */
 function buildExplorer(container) {
-
-  // Data for each celestial entry
-  const entries = [
-    {
-      id:    'mercury',
-      label: 'Mercury',
-      color: '#b5a59a',
-      description: 'The smallest planet in our solar system and closest to the Sun. A year on Mercury lasts just 88 Earth days, yet a single day stretches nearly 59 Earth days.',
-      data: [
-        ['Type',        'Rocky planet'],
-        ['Distance',    '77 million km (min from Earth)'],
-        ['Diameter',    '4,879 km'],
-        ['Moons',       '0'],
-        ['Orbit period','88 Earth days'],
-        ['Surface',     '-180 °C to 430 °C'],
-      ],
-    },
-    {
-      id:    'venus',
-      label: 'Venus',
-      color: '#e8c97e',
-      description: 'Often called Earth\'s twin due to similar size, Venus hides beneath a thick toxic atmosphere. It is the hottest planet in the solar system, averaging 465 °C.',
-      data: [
-        ['Type',        'Rocky planet'],
-        ['Distance',    '38 million km (min from Earth)'],
-        ['Diameter',    '12,104 km'],
-        ['Moons',       '0'],
-        ['Orbit period','225 Earth days'],
-        ['Surface',     '~465 °C (avg)'],
-      ],
-    },
-    {
-      id:    'earth',
-      label: 'Earth',
-      color: '#4a9fe0',
-      description: 'Our home — the only known world teeming with life. Earth\'s magnetic field and atmosphere protect us from harmful solar radiation.',
-      data: [
-        ['Type',        'Rocky planet'],
-        ['Distance',    '0 km (home)'],
-        ['Diameter',    '12,742 km'],
-        ['Moons',       '1'],
-        ['Orbit period','365.25 days'],
-        ['Surface',     '-88 °C to 58 °C'],
-      ],
-    },
-    {
-      id:    'mars',
-      label: 'Mars',
-      color: '#c1440e',
-      description: 'The Red Planet — home to Olympus Mons, the tallest volcano in the solar system. Scientists believe liquid water once flowed across its surface.',
-      data: [
-        ['Type',        'Rocky planet'],
-        ['Distance',    '55 million km (min from Earth)'],
-        ['Diameter',    '6,779 km'],
-        ['Moons',       '2 (Phobos, Deimos)'],
-        ['Orbit period','687 Earth days'],
-        ['Surface',     '-60 °C avg'],
-      ],
-    },
-    {
-      id:    'jupiter',
-      label: 'Jupiter',
-      color: '#c88b3a',
-      description: 'A gas giant so massive it could swallow all other planets combined. Its Great Red Spot is a storm that has raged for at least 350 years.',
-      data: [
-        ['Type',        'Gas giant'],
-        ['Distance',    '588 million km (min from Earth)'],
-        ['Diameter',    '139,820 km'],
-        ['Moons',       '95 (known)'],
-        ['Orbit period','11.9 Earth years'],
-        ['Composition', 'H₂, He, CH₄, NH₃'],
-      ],
-    },
-    {
-      id:    'saturn',
-      label: 'Saturn',
-      color: '#e4d191',
-      description: 'Ringed jewel of the solar system. Saturn\'s rings are made of ice and rock, stretching up to 282,000 km from the planet\'s centre.',
-      data: [
-        ['Type',        'Gas giant'],
-        ['Distance',    '1.2 billion km (min from Earth)'],
-        ['Diameter',    '116,460 km'],
-        ['Moons',       '146 (known)'],
-        ['Orbit period','29.5 Earth years'],
-        ['Ring width',  'Up to 282,000 km'],
-      ],
-    },
-  ];
-
-  // Build sidebar HTML
-  const sidebarItems = entries
-    .map(e => `<div class="explorer-list-item${e.id === 'earth' ? ' active-item' : ''}" data-entry="${e.id}">${e.label}</div>`)
-    .join('');
+  const fs = {
+    'Documents': ['Mission_Log_042.txt', 'Orbit_Coordinates.csv', 'Shield_Specs.pdf'],
+    'Downloads': ['Cosmic_Symphony.mp3', 'Star_Chart_v2.png'],
+    'Pictures': ['Nebula_Alpha.jpg', 'Deep_Space_9.png'],
+    'Music': ['Solar_Winds.wav']
+  };
 
   container.innerHTML = `
-    <div class="explorer-app">
-      <div class="explorer-list">${sidebarItems}</div>
-      <div class="explorer-details" id="explorer-details"></div>
+    <div style="display:flex; height:100%; color:#fff; font-family:sans-serif;">
+      <div style="width:150px; background:#0d0d16; border-right:1px solid rgba(255,255,255,0.1); padding:10px;">
+        <div style="font-size:0.8rem; color:#888; margin-bottom:10px;">FOLDERS</div>
+        ${Object.keys(fs).map(folder => `<div class="explorer-folder" style="padding:6px; cursor:pointer; font-size:0.9rem;" data-folder="${folder}"><i class="fa-solid fa-folder" style="color:#00f3ff; margin-right:6px;"></i>${folder}</div>`).join('')}
+      </div>
+      <div style="flex:1; padding:15px; background:#05050a;" id="explorer-files">
+        <div style="color:#888;">Select a folder to inspect...</div>
+      </div>
     </div>
   `;
 
-  function renderEntry(entry) {
-    const detailsEl = container.querySelector('#explorer-details');
-
-    const rows = entry.data
-      .map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`)
-      .join('');
-
-    detailsEl.innerHTML = `
-      <div class="explorer-hero" style="background: radial-gradient(circle at 40% 50%, ${entry.color}33 0%, #06060c 70%);">
-        <div class="explorer-hero-title" style="color:${entry.color}">${entry.label.toUpperCase()}</div>
-      </div>
-      <div class="explorer-title" style="color:${entry.color}">${entry.label}</div>
-      <div class="explorer-desc">${entry.description}</div>
-      <table class="explorer-meta-table"><tbody>${rows}</tbody></table>
-    `;
-  }
-
-  // Wire up sidebar clicks
-  container.querySelectorAll('.explorer-list-item').forEach(item => {
-    item.addEventListener('click', () => {
-      container.querySelectorAll('.explorer-list-item').forEach(i => i.classList.remove('active-item'));
-      item.classList.add('active-item');
-      const entry = entries.find(e => e.id === item.dataset.entry);
-      if (entry) renderEntry(entry);
+  const fileArea = container.querySelector('#explorer-files');
+  container.querySelectorAll('.explorer-folder').forEach(el => {
+    el.addEventListener('click', () => {
+      const folder = el.dataset.folder;
+      fileArea.innerHTML = `
+        <h4 style="margin-top:0; color:#00f3ff;">${folder}</h4>
+        <div style="display:flex; gap:15px; flex-wrap:wrap;">
+          ${fs[folder].map(file => `
+            <div style="width:80px; text-align:center; font-size:0.8rem;">
+              <i class="fa-solid fa-file" style="font-size:2rem; color:#b8c7e0; margin-bottom:5px;"></i>
+              <div style="word-break:break-word;">${file}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
     });
   });
-
-  // Render the default entry
-  renderEntry(entries.find(e => e.id === 'earth'));
 }
 
 
-/* ── f. Orion Settings ── */
+/* ── f. Orion Control (Settings) ── */
 function buildSettings(container) {
-
-  const wallpapers = [
-    { id: 'default',  label: 'Default',    bg: 'radial-gradient(circle at 80% 20%, rgba(72,20,139,0.5) 0%, #05050b 60%), radial-gradient(circle at 20% 80%, rgba(112,16,163,0.5) 0%, #05050b 70%)' },
-    { id: 'aurora',   label: 'Aurora',     bg: 'linear-gradient(135deg, #001a1f 0%, #003d2e 40%, #00613f 100%)' },
-    { id: 'crimson',  label: 'Crimson',    bg: 'linear-gradient(135deg, #1a0005 0%, #5b0010 50%, #8b0020 100%)' },
-    { id: 'midnight', label: 'Midnight',   bg: 'linear-gradient(135deg, #000010 0%, #001040 50%, #002070 100%)' },
-    { id: 'solar',    label: 'Solar Wind', bg: 'linear-gradient(135deg, #0a0000 0%, #3d0e00 40%, #7a2600 100%)' },
-  ];
-
-  const thumbs = wallpapers
-    .map(w => `
-      <div class="wallpaper-card${w.id === 'default' ? ' active-wallpaper' : ''}"
-           data-wp="${w.id}"
-           style="background: ${w.bg};">
-        <span>${w.label}</span>
-      </div>
-    `)
-    .join('');
-
   container.innerHTML = `
-    <div class="settings-app">
-
-      <div class="settings-section">
-        <div class="settings-heading">🎨 Appearance</div>
-        <div class="settings-wallpaper-grid">${thumbs}</div>
+    <div style="padding:20px; color:#fff; font-family:sans-serif;">
+      <h3 style="margin-top:0; color:#00f3ff;">Orion Control Settings</h3>
+      <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+        <span>Starfield Background</span>
+        <input type="checkbox" id="set-starfield" ${OS.starfieldActive ? 'checked' : ''} />
       </div>
-
-      <div class="settings-section">
-        <div class="settings-heading">🔊 System Audio</div>
-        <div class="settings-row">
-          <span>System Sounds</span>
-          <label class="settings-toggle">
-            <input type="checkbox" id="setting-sound" ${OS.soundEnabled ? 'checked' : ''} />
-            <span class="slider-switch"></span>
-          </label>
-        </div>
+      <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+        <span>System Sound Effects</span>
+        <input type="checkbox" id="set-sound" ${OS.soundEnabled ? 'checked' : ''} />
       </div>
-
-      <div class="settings-section">
-        <div class="settings-heading">✨ Effects</div>
-        <div class="settings-row">
-          <span>Starfield Animation</span>
-          <label class="settings-toggle">
-            <input type="checkbox" id="setting-starfield" ${OS.starfieldActive ? 'checked' : ''} />
-            <span class="slider-switch"></span>
-          </label>
-        </div>
-      </div>
-
-      <div class="settings-section">
-        <div class="settings-heading">ℹ️ System Information</div>
-        <div class="settings-row"><span>OS Name</span>      <span class="text-cyan">ZenZei OS 1.0</span></div>
-        <div class="settings-row"><span>Edition</span>      <span class="text-cyan">Celestial</span></div>
-        <div class="settings-row"><span>Kernel</span>       <span class="text-cyan">WebKit Warp-9</span></div>
-        <div class="settings-row"><span>Architecture</span> <span class="text-cyan">x86_64 (Browser)</span></div>
-        <div class="settings-row"><span>Build</span>        <span class="text-cyan" id="build-date"></span></div>
-      </div>
-
     </div>
   `;
 
-  // Build date
-  container.querySelector('#build-date').textContent = new Date().toLocaleDateString('en-US', {
-    year: 'numeric', month: 'long', day: 'numeric',
-  });
-
-  // Wallpaper switcher
-  const nebula = document.getElementById('nebula-overlay');
-
-  container.querySelectorAll('.wallpaper-card').forEach(card => {
-    card.addEventListener('click', () => {
-      container.querySelectorAll('.wallpaper-card').forEach(c => c.classList.remove('active-wallpaper'));
-      card.classList.add('active-wallpaper');
-
-      const wp = wallpapers.find(w => w.id === card.dataset.wp);
-      if (wp && nebula) {
-        nebula.style.background = wp.bg;
-        nebula.style.opacity    = '0.6';
-      }
-    });
-  });
-
-  // Sound toggle
-  container.querySelector('#setting-sound').addEventListener('change', e => {
-    OS.soundEnabled = e.target.checked;
-    OS.soundVolume  = OS.soundEnabled ? 0.5 : 0;
-    const icon = document.querySelector('#tray-audio i');
-    if (icon) icon.className = OS.soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
-  });
-
-  // Starfield toggle
-  container.querySelector('#setting-starfield').addEventListener('change', e => {
+  container.querySelector('#set-starfield').addEventListener('change', e => {
     OS.starfieldActive = e.target.checked;
-    const canvas = document.getElementById('starfield');
-    if (canvas) canvas.style.opacity = OS.starfieldActive ? '1' : '0';
+  });
+
+  container.querySelector('#set-sound').addEventListener('change', e => {
+    OS.soundEnabled = e.target.checked;
+    OS.soundVolume = OS.soundEnabled ? 0.5 : 0;
   });
 }
 
 
 /* ============================================================
    9. AUDIO ENGINE
-   Synthesises all UI sounds procedurally with the Web Audio API.
+   Web Audio API sound generator for system audio effects.
 ============================================================ */
 function initAudioContext() {
-
-  if (OS.audioCtx) return;
-
-  const AudioAPI = window.AudioContext || window.webkitAudioContext;
-  if (AudioAPI) OS.audioCtx = new AudioAPI();
+  if (!OS.audioCtx) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) OS.audioCtx = new AudioCtx();
+  }
 }
 
 function playSystemSound(type) {
+  if (!OS.soundEnabled || !OS.audioCtx) return;
 
-  if (!OS.soundEnabled) return;
-  if (!OS.audioCtx)     return;
+  const ctx = OS.audioCtx;
+  if (ctx.state === 'suspended') ctx.resume();
 
-  if (OS.audioCtx.state === 'suspended') OS.audioCtx.resume();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
 
-  const ctx  = OS.audioCtx;
-  const now  = ctx.currentTime;
-
-  const master      = ctx.createGain();
-  master.gain.value = OS.soundVolume;
-  master.connect(ctx.destination);
+  const now = ctx.currentTime;
 
   switch (type) {
-
-    // Short click (UI interaction)
-    case 'click': {
-      const osc  = ctx.createOscillator();
-      const gain = ctx.createGain();
+    case 'click':
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(1200, now);
-      osc.frequency.exponentialRampToValueAtTime(150, now + 0.06);
-      gain.gain.setValueAtTime(0.08, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-      osc.connect(gain); gain.connect(master);
-      osc.start(now); osc.stop(now + 0.06);
+      osc.frequency.setValueAtTime(800, now);
+      gain.gain.setValueAtTime(0.05 * OS.soundVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+      osc.start(now);
+      osc.stop(now + 0.05);
       break;
-    }
 
-    // Boot-up chime (layered harmonics)
-    case 'boot': {
-      const root     = 146.83;
-      const duration = 2;
-      [1, 1.5, 2, 2.5, 3].forEach((mult, i) => {
-        const osc  = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = i === 0 ? 'sawtooth' : 'sine';
-        osc.frequency.value = root * mult;
-
-        if (i === 0) {
-          const filter = ctx.createBiquadFilter();
-          filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(100, now);
-          filter.frequency.exponentialRampToValueAtTime(400, now + duration);
-          osc.connect(filter); filter.connect(gain);
-        } else {
-          osc.connect(gain);
-        }
-
-        gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.06 / 5, now + 0.6);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-        gain.connect(master);
-        osc.start(now); osc.stop(now + duration);
-      });
+    case 'open':
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(300, now);
+      osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+      gain.gain.setValueAtTime(0.1 * OS.soundVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      osc.start(now);
+      osc.stop(now + 0.15);
       break;
-    }
 
-    // App open (rising tone)
-    case 'open': {
-      const osc  = ctx.createOscillator();
-      const gain = ctx.createGain();
+    case 'boot':
       osc.type = 'sine';
-      osc.frequency.value = 440;
-      osc.frequency.exponentialRampToValueAtTime(1200, now + 0.18);
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(0.12, now + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-      osc.connect(gain); gain.connect(master);
-      osc.start(now); osc.stop(now + 0.18);
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.6);
+      gain.gain.setValueAtTime(0.15 * OS.soundVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+      osc.start(now);
+      osc.stop(now + 0.6);
       break;
-    }
 
-    // Shutdown (descending hum)
-    case 'shutdown': {
-      const osc  = ctx.createOscillator();
-      const gain = ctx.createGain();
+    case 'laser':
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(900, now);
+      osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+      gain.gain.setValueAtTime(0.1 * OS.soundVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+      osc.start(now);
+      osc.stop(now + 0.1);
+      break;
+
+    case 'explosion':
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(150, now);
+      osc.frequency.exponentialRampToValueAtTime(30, now + 0.2);
+      gain.gain.setValueAtTime(0.2 * OS.soundVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+      osc.start(now);
+      osc.stop(now + 0.2);
+      break;
+
+    case 'shutdown':
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(600, now);
-      osc.frequency.exponentialRampToValueAtTime(80, now + 1.2);
-      gain.gain.setValueAtTime(0.15, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
-      osc.connect(gain); gain.connect(master);
-      osc.start(now); osc.stop(now + 1.2);
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(110, now + 0.8);
+      gain.gain.setValueAtTime(0.15 * OS.soundVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+      osc.start(now);
+      osc.stop(now + 0.8);
       break;
-    }
-
-    // Alert (double blip)
-    case 'alert': {
-      [0, 0.15].forEach(delay => {
-        const osc  = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const t    = now + delay;
-        osc.type = 'triangle';
-        osc.frequency.value = 880;
-        gain.gain.setValueAtTime(0.08, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-        osc.connect(gain); gain.connect(master);
-        osc.start(t); osc.stop(t + 0.12);
-      });
-      break;
-    }
-
   }
 }
 
@@ -1956,785 +1592,7 @@ function playSystemSound(type) {
 /* ============================================================
    10. UTILITY HELPERS
 ============================================================ */
-
-/**
- * Returns a random integer between min (inclusive) and max (inclusive).
- */
-function randInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-/**
- * Clamps a value between lo and hi.
- */
-function clamp(value, lo, hi) {
-  return Math.max(lo, Math.min(hi, value));
-}};
-
-document.addEventListener("DOMContentLoaded", () => {
-  OS.bootTime = Date.now();
-
-  initBootSequence();
-  initStarfield();
-  initSystemUI();
-});
-
-// =======================
-// Boot Screen
-// =======================
-
-function initBootSequence() {
-
-  const progressBar = document.getElementById("boot-progress");
-  const statusText = document.getElementById("boot-status");
-
-  const bootloader = document.getElementById("bootloader");
-  const lockscreen = document.getElementById("lockscreen");
-
-  const bootSteps = [
-    {
-      progress: 15,
-      message: "Starting ZenZei kernel..."
-    },
-    {
-      progress: 30,
-      message: "Loading navigation modules..."
-    },
-    {
-      progress: 55,
-      message: "Synchronizing shield matrix..."
-    },
-    {
-      progress: 75,
-      message: "Connecting orbital network..."
-    },
-    {
-      progress: 90,
-      message: "Preparing desktop..."
-    },
-    {
-      progress: 100,
-      message: "Welcome aboard."
-    }
-  ];
-
-  let currentStep = 0;
-
-  function nextStep() {
-
-    if (currentStep >= bootSteps.length) {
-
-      setTimeout(() => {
-
-        bootloader.style.opacity = 0;
-
-        setTimeout(() => {
-
-          bootloader.classList.add("hidden");
-
-          lockscreen.classList.remove("hidden");
-          lockscreen.style.opacity = 1;
-
-        }, 800);
-
-      }, 500);
-
-      return;
-    }
-
-    const step = bootSteps[currentStep];
-
-    progressBar.style.width = `${step.progress}%`;
-    statusText.textContent = step.message;
-
-    currentStep++;
-
-    setTimeout(nextStep, 300 + Math.random() * 350);
-  }
-
-  setTimeout(nextStep, 300);
-}
-
-// =======================
-// Desktop UI
-// =======================
-
-function initSystemUI() {
-
-  const lockscreen = document.getElementById("lockscreen");
-  const desktop = document.getElementById("desktop");
-
-  const unlockBtn = document.getElementById("btn-unlock");
-
-  const startButton = document.getElementById("start-button");
-  const startMenu = document.getElementById("start-menu");
-
-  function updateClock() {
-
-    const now = new Date();
-
-    const lockTime = document.getElementById("lockscreen-time");
-    const lockDate = document.getElementById("lockscreen-date");
-    const trayTime = document.getElementById("tray-time");
-
-    if (lockTime) {
-      lockTime.textContent = now.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false
-      });
-    }
-
-    if (lockDate) {
-      lockDate.textContent = now.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric"
-      });
-    }
-
-    if (trayTime) {
-      trayTime.textContent = now.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false
-      });
-    }
-  }
-
-  updateClock();
-  setInterval(updateClock, 1000);
-
-  function unlockDesktop() {
-
-    initAudioContext();
-    playSystemSound("boot");
-
-    lockscreen.style.transform = "translateY(-100vh)";
-    lockscreen.style.opacity = 0;
-
-    setTimeout(() => {
-
-      lockscreen.classList.add("hidden");
-      desktop.classList.remove("hidden");
-
-      startHardwareMetricsSim();
-
-    }, 800);
-  }
-
-  unlockBtn.addEventListener("click", unlockDesktop);
-
-  window.addEventListener("keydown", e => {
-
-    const allowed =
-      e.code === "Space" ||
-      e.code === "Enter";
-
-    if (
-      !lockscreen.classList.contains("hidden") &&
-      allowed
-    ) {
-      unlockDesktop();
-    }
-
-  });
-
-  startButton.addEventListener("click", e => {
-
-    e.stopPropagation();
-
-    playSystemSound("click");
-
-    startMenu.classList.toggle("hidden");
-
-    if (!startMenu.classList.contains("hidden")) {
-      startMenu.classList.add("active-start");
-    }
-
-  });
-
-  document.addEventListener("click", e => {
-
-    if (
-      startMenu.classList.contains("hidden")
-    ) return;
-
-    if (
-      startMenu.contains(e.target) ||
-      e.target === startButton
-    ) return;
-
-    startMenu.classList.add("hidden");
-
-  });
-
-  document
-    .getElementById("tray-audio")
-    .addEventListener("click", () => {
-
-      OS.soundEnabled = !OS.soundEnabled;
-
-      const icon =
-        document.querySelector("#tray-audio i");
-
-      if (OS.soundEnabled) {
-
-        OS.soundVolume = 0.5;
-
-        icon.className =
-          "fa-solid fa-volume-high";
-
-      } else {
-
-        OS.soundVolume = 0;
-
-        icon.className =
-          "fa-solid fa-volume-xmark";
-
-      }
-
-      playSystemSound("click");
-
-    });
-
-  document
-    .getElementById("btn-lock-os")
-    .addEventListener("click", () => {
-
-      playSystemSound("click");
-
-      startMenu.classList.add("hidden");
-
-      lockscreen.classList.remove("hidden");
-      lockscreen.style.opacity = 1;
-      lockscreen.style.transform = "translateY(0)";
-
-    });
-
-  document
-    .getElementById("btn-restart-os")
-    .addEventListener("click", () => {
-
-      playSystemSound("click");
-
-      startMenu.classList.add("hidden");
-
-      triggerPowerOverlay(
-        "Restarting ZenZei OS...",
-        () => window.location.reload()
-      );
-
-    });
-
-  document
-    .getElementById("btn-shutdown-os")
-    .addEventListener("click", () => {
-
-      playSystemSound("click");
-
-      startMenu.classList.add("hidden");
-
-      triggerPowerOverlay(
-        "Shutting down...",
-        () => {
-
-          document.body.innerHTML = `
-          <div style="
-              height:100vh;
-              display:flex;
-              justify-content:center;
-              align-items:center;
-              background:#000;
-              color:#333;
-              font-family:'Orbitron';
-              font-size:.9rem;
-          ">
-            [ ZenZei OS Offline ]
-          </div>
-          `;
-
-        }
-      );
-
-    });
-
-}
-
-// =======================
-// Shutdown Overlay
-// =======================
-
-function triggerPowerOverlay(message, callback) {
-
-  const overlay =
-    document.getElementById("shutdown-screen");
-
-  const label =
-    document.getElementById("shutdown-text");
-
-  label.textContent = message;
-
-  overlay.classList.remove("hidden");
-  overlay.style.opacity = 1;
-
-  playSystemSound("shutdown");
-
-  setTimeout(callback, 2500);
-
-}
-
-// =======================
-// Fake CPU / RAM monitor
-// =======================
-
-function startHardwareMetricsSim() {
-
-  const cpuBar =
-    document.getElementById("cpu-loader");
-
-  const ramBar =
-    document.getElementById("ram-loader");
-
-  OS.simulatedStatsTimer = setInterval(() => {
-
-    if (!cpuBar || !ramBar) return;
-
-    const openApps =
-      Object.keys(OS.runningApps).length;
-
-    let cpu =
-      6 +
-      openApps * 6 +
-      Math.floor(Math.random() * 10);
-
-    let ram =
-      38 +
-      openApps * 4 +
-      Math.floor(Math.random() * 6);
-
-    cpu = Math.min(cpu, 98);
-    ram = Math.min(ram, 95);
-
-    cpuBar.style.width = `${cpu}%`;
-    ramBar.style.width = `${ram}%`;
-
-  }, 3000);
-
-}
-
-// =======================
-// Starfield Background
-// =======================
-
-function initStarfield() {
-
-    const canvas = document.getElementById("starfield");
-    const ctx = canvas.getContext("2d");
-
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-
-    window.addEventListener("resize", () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-    });
-
-    const STAR_COUNT = 180;
-
-    const stars = [];
-    const shootingStars = [];
-
-    for (let i = 0; i < STAR_COUNT; i++) {
-
-        stars.push({
-            x: Math.random() * width,
-            y: Math.random() * height,
-
-            radius: 0.3 + Math.random() * 1.5,
-            speed: 0.02 + Math.random() * 0.15,
-
-            alpha: 0.3 + Math.random() * 0.7,
-            layer: Math.random() * 2
-        });
-
-    }
-
-    function spawnShootingStar() {
-
-        if (!OS.starfieldActive) return;
-
-        shootingStars.push({
-
-            x: Math.random() * width,
-            y: Math.random() * height * 0.5,
-
-            vx: 10 + Math.random() * 15,
-            vy: 3 + Math.random() * 5,
-
-            length: 40 + Math.random() * 80,
-
-            alpha: 1
-        });
-
-        setTimeout(
-            spawnShootingStar,
-            6000 + Math.random() * 12000
-        );
-    }
-
-    setTimeout(spawnShootingStar, 5000);
-
-    let offsetX = 0;
-    let offsetY = 0;
-
-    let targetOffsetX = 0;
-    let targetOffsetY = 0;
-
-    window.addEventListener("mousemove", e => {
-
-        targetOffsetX =
-            (e.clientX - width / 2) * 0.05;
-
-        targetOffsetY =
-            (e.clientY - height / 2) * 0.05;
-
-    });
-
-    function drawFrame() {
-
-        requestAnimationFrame(drawFrame);
-
-        if (!OS.starfieldActive) return;
-
-        ctx.fillStyle = "#030307";
-        ctx.fillRect(0, 0, width, height);
-
-        offsetX += (targetOffsetX - offsetX) * 0.08;
-        offsetY += (targetOffsetY - offsetY) * 0.08;
-
-        ctx.fillStyle = "#fff";
-
-        for (const star of stars) {
-
-            star.x += star.speed;
-
-            if (star.x > width)
-                star.x = 0;
-
-            let x =
-                star.x - offsetX * star.layer;
-
-            let y =
-                star.y - offsetY * star.layer;
-
-            if (x < 0) x += width;
-            if (x > width) x -= width;
-
-            if (y < 0) y += height;
-            if (y > height) y -= height;
-
-            ctx.globalAlpha = star.alpha;
-
-            ctx.beginPath();
-            ctx.arc(
-                x,
-                y,
-                star.radius,
-                0,
-                Math.PI * 2
-            );
-            ctx.fill();
-        }
-
-        ctx.globalAlpha = 1;
-
-        for (let i = shootingStars.length - 1; i >= 0; i--) {
-
-            const s = shootingStars[i];
-
-            s.x += s.vx;
-            s.y += s.vy;
-
-            s.alpha -= 0.04;
-
-            if (s.alpha <= 0) {
-                shootingStars.splice(i, 1);
-                continue;
-            }
-
-            ctx.globalAlpha = s.alpha;
-
-            ctx.strokeStyle = "rgba(0,243,255,.8)";
-            ctx.lineWidth = 1.5;
-
-            ctx.beginPath();
-
-            ctx.moveTo(s.x, s.y);
-
-            ctx.lineTo(
-                s.x - s.vx * 1.5,
-                s.y - s.vy * 1.5
-            );
-
-            ctx.stroke();
-        }
-
-        ctx.globalAlpha = 1;
-    }
-
-    drawFrame();
-}
-
-//
-// Audio
-//
-
-function initAudioContext() {
-
-    if (OS.audioCtx) return;
-
-    const AudioAPI =
-        window.AudioContext ||
-        window.webkitAudioContext;
-
-    if (AudioAPI) {
-        OS.audioCtx = new AudioAPI();
-    }
-
-}
-
-function playSystemSound(type) {
-
-    if (!OS.soundEnabled) return;
-    if (!OS.audioCtx) return;
-
-    if (OS.audioCtx.state === "suspended") {
-        OS.audioCtx.resume();
-    }
-
-    const ctx = OS.audioCtx;
-    const now = ctx.currentTime;
-
-    const master = ctx.createGain();
-
-    master.gain.value = OS.soundVolume;
-    master.connect(ctx.destination);
-
-    switch (type) {
-
-        case "click": {
-
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-
-            osc.type = "sine";
-
-            osc.frequency.setValueAtTime(
-                1200,
-                now
-            );
-
-            osc.frequency.exponentialRampToValueAtTime(
-                150,
-                now + .06
-            );
-
-            gain.gain.setValueAtTime(.08, now);
-
-            gain.gain.exponentialRampToValueAtTime(
-                .001,
-                now + .06
-            );
-
-            osc.connect(gain);
-            gain.connect(master);
-
-            osc.start(now);
-            osc.stop(now + .06);
-
-            break;
-        }
-
-        case "boot": {
-
-            const root = 146.83;
-            const duration = 2;
-
-            [1, 1.5, 2, 2.5, 3].forEach((mult, i) => {
-
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-
-                osc.type =
-                    i === 0
-                        ? "sawtooth"
-                        : "sine";
-
-                osc.frequency.value =
-                    root * mult;
-
-                if (i === 0) {
-
-                    const filter =
-                        ctx.createBiquadFilter();
-
-                    filter.type = "lowpass";
-
-                    filter.frequency.setValueAtTime(
-                        100,
-                        now
-                    );
-
-                    filter.frequency.exponentialRampToValueAtTime(
-                        400,
-                        now + duration
-                    );
-
-                    osc.connect(filter);
-                    filter.connect(gain);
-
-                } else {
-
-                    osc.connect(gain);
-
-                }
-
-                gain.gain.setValueAtTime(
-                    0,
-                    now
-                );
-
-                gain.gain.linearRampToValueAtTime(
-                    .06 / 5,
-                    now + .6
-                );
-
-                gain.gain.exponentialRampToValueAtTime(
-                    .001,
-                    now + duration
-                );
-
-                gain.connect(master);
-
-                osc.start(now);
-                osc.stop(now + duration);
-
-            });
-
-            break;
-        }
-
-        case "open": {
-
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-
-            osc.type = "sine";
-
-            osc.frequency.value = 440;
-
-            osc.frequency.exponentialRampToValueAtTime(
-                1200,
-                now + .18
-            );
-
-            gain.gain.setValueAtTime(
-                0,
-                now
-            );
-
-            gain.gain.linearRampToValueAtTime(
-                .12,
-                now + .05
-            );
-
-            gain.gain.exponentialRampToValueAtTime(
-                .001,
-                now + .18
-            );
-
-            osc.connect(gain);
-            gain.connect(master);
-
-            osc.start(now);
-            osc.stop(now + .18);
-
-            break;
-        }
-
-        case "shutdown": {
-
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-
-            osc.type = "sine";
-
-            osc.frequency.setValueAtTime(
-                600,
-                now
-            );
-
-            osc.frequency.exponentialRampToValueAtTime(
-                80,
-                now + 1.2
-            );
-
-            gain.gain.setValueAtTime(
-                .15,
-                now
-            );
-
-            gain.gain.exponentialRampToValueAtTime(
-                .001,
-                now + 1.2
-            );
-
-            osc.connect(gain);
-            gain.connect(master);
-
-            osc.start(now);
-            osc.stop(now + 1.2);
-
-            break;
-        }
-
-        case "alert": {
-
-            [0, .15].forEach(delay => {
-
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-
-                const start =
-                    now + delay;
-
-                osc.type = "triangle";
-
-                osc.frequency.value = 880;
-
-                gain.gain.setValueAtTime(
-                    .08,
-                    start
-                );
-
-                gain.gain.exponentialRampToValueAtTime(
-                    .001,
-                    start + .12
-                );
-
-                osc.connect(gain);
-                gain.connect(master);
-
-                osc.start(start);
-                osc.stop(start + .12);
-
-            });
-
-            break;
-        }
-
-    }
-
+/** Utility wrapper for safely fetching elements */
+function $(id) {
+  return document.getElementById(id);
 }
