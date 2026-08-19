@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zenzei OS - Celestial Workspace</title>
   <meta name="description" content="Zenzei OS - A sleek, space-themed web-based operating system with interactive apps, simulated OS metrics, and glassmorphic aesthetics.">
-
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,20 +17,13 @@
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
-
-  <!--  Background  -->
   <canvas id="starfield"></canvas>
   <div id="nebula-overlay"></div>
-
-  <!--  1. Bootloader  -->
+  <!-- 1. Bootloader -->
   <div id="bootloader" class="system-overlay">
     <div class="boot-logo-container">
-      <img
-        src="logo.jpg"
-        alt="Zenzei OS"
-        class="boot-logo"
-        onerror="this.src='https://placehold.co/160x160/090911/00f3ff?text=Z';"
-      >
+      <img src="logo(2).jpg" alt="Zenzei OS" class="boot-logo"
+        onerror="this.src='https://placehold.co/160x160/090911/7b61ff?text=Z';">
       <h1 class="boot-title">ZENZEI<span>OS</span></h1>
     </div>
     <div class="boot-progress-wrapper">
@@ -40,22 +32,16 @@
     <div class="boot-status" id="boot-status">Booting core files...</div>
   </div>
 
-  <!--  2. Lock Screen  -->
+  <!-- 2. Lock Screen -->
   <div id="lockscreen" class="system-overlay hidden">
-
     <div class="lockscreen-time-container">
       <div id="lockscreen-time">00:00</div>
       <div id="lockscreen-date">Monday, January 1</div>
     </div>
-
     <div class="lockscreen-login-card">
       <div class="user-avatar-wrapper">
-        <img
-          src="logo.jpg"
-          alt="User"
-          class="user-avatar"
-          onerror="this.src='https://placehold.co/90x90/090911/00f3ff?text=Z';"
-        >
+        <img src="logo.jpg" alt="User" class="user-avatar"
+          onerror="this.src='https://placehold.co/90x90/090911/7b61ff?text=Z';">
       </div>
       <div class="user-name">Cosmic Explorer</div>
       <button id="btn-unlock" class="btn-galaxy">
@@ -63,133 +49,85 @@
         <i class="fa-solid fa-rocket"></i>
       </button>
     </div>
-
     <div class="lockscreen-footer">
       Zenzei OS 1.0 &bull; Click or press Enter / Space to unlock
     </div>
-
   </div>
 
-  <!--  3. Desktop  -->
+  <!-- 3. Desktop -->
   <div id="desktop" class="hidden">
 
-    <!-- Desktop icon grid -->
     <div class="desktop-shortcuts">
-
       <div class="shortcut" onclick="openApp('terminal')">
-        <div class="shortcut-icon-wrapper terminal-theme">
-          <i class="fa-solid fa-terminal"></i>
-        </div>
+        <div class="shortcut-icon-wrapper terminal-theme"><i class="fa-solid fa-terminal"></i></div>
         <span class="shortcut-label">Cosmic Terminal</span>
       </div>
-
       <div class="shortcut" onclick="openApp('notes')">
-        <div class="shortcut-icon-wrapper notes-theme">
-          <i class="fa-regular fa-clipboard"></i>
-        </div>
+        <div class="shortcut-icon-wrapper notes-theme"><i class="fa-regular fa-clipboard"></i></div>
         <span class="shortcut-label">Nebula Notes</span>
       </div>
-
       <div class="shortcut" onclick="openApp('asteroids')">
-        <div class="shortcut-icon-wrapper game-theme">
-          <i class="fa-solid fa-meteor"></i>
-        </div>
+        <div class="shortcut-icon-wrapper game-theme"><i class="fa-solid fa-meteor"></i></div>
         <span class="shortcut-label">Cosmic Asteroids</span>
       </div>
-
       <div class="shortcut" onclick="openApp('draw')">
-        <div class="shortcut-icon-wrapper draw-theme">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-        </div>
+        <div class="shortcut-icon-wrapper draw-theme"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
         <span class="shortcut-label">Stellar Draw</span>
       </div>
-
       <div class="shortcut" onclick="openApp('explorer')">
-        <div class="shortcut-icon-wrapper explorer-theme">
-          <i class="fa-solid fa-user-astronaut"></i>
-        </div>
+        <div class="shortcut-icon-wrapper explorer-theme"><i class="fa-solid fa-user-astronaut"></i></div>
         <span class="shortcut-label">Space Explorer</span>
       </div>
-
       <div class="shortcut" onclick="openApp('settings')">
-        <div class="shortcut-icon-wrapper settings-theme">
-          <i class="fa-solid fa-sliders"></i>
-        </div>
+        <div class="shortcut-icon-wrapper settings-theme"><i class="fa-solid fa-sliders"></i></div>
         <span class="shortcut-label">Orion Control</span>
       </div>
-
     </div>
 
-    <!-- Window layer (populated by JS) -->
     <div id="windows-container"></div>
 
-    <!-- Taskbar  -->
+    <!-- Taskbar -->
     <div id="taskbar">
-
       <div id="start-button">
-        <img
-          src="logo.jpg"
-          alt="Start"
-          class="start-btn-logo"
-          onerror="this.src='https://placehold.co/20x20/090911/00f3ff?text=Z';"
-        >
+        <img src="logo(2).jpg" alt="Start" class="start-btn-logo"
+          onerror="this.src='https://placehold.co/20x20/090911/7b61ff?text=Z';">
         <span class="start-btn-text">ZENZEI</span>
       </div>
-
       <div id="taskbar-apps-container"></div>
-
       <div class="system-tray">
-
         <div class="tray-icon">
           <i class="fa-solid fa-battery-three-quarters"></i>
           <span class="tray-sub-lbl">100%</span>
         </div>
-
         <div class="tray-divider"></div>
-
         <div class="tray-icon" id="tray-audio">
           <i class="fa-solid fa-volume-high"></i>
         </div>
-
         <div class="tray-divider"></div>
-
         <div class="tray-clock" id="tray-time">00:00:00</div>
-
       </div>
-
     </div>
 
-    <!--  Start Menu  -->
+    <!-- Start Menu -->
     <div id="start-menu" class="hidden">
-
-      <!-- Left sidebar -->
       <div class="start-menu-sidebar">
-
         <div class="start-sidebar-user">
-          <img
-            src="logo.jpg"
-            alt="User"
-            class="start-avatar"
-            onerror="this.src='https://placehold.co/64x64/090911/00f3ff?text=Z';"
-          >
+          <img src="logo(2).jpg" alt="User" class="start-avatar"
+            onerror="this.src='https://placehold.co/64x64/090911/7b61ff?text=Z';">
           <div class="start-username">Cosmic Explorer</div>
           <div class="start-user-status">
-            <i class="fa-solid fa-circle text-green" style="font-size: 0.5rem;"></i>
+            <i class="fa-solid fa-circle text-green" style="font-size:0.5rem;"></i>
             Online
           </div>
         </div>
-
         <div class="start-sidebar-links">
           <button class="start-sidebar-item" onclick="openApp('explorer')">
-            <i class="fa-solid fa-user-astronaut text-cyan"></i>
-            About System
+            <i class="fa-solid fa-user-astronaut text-cyan"></i> About System
           </button>
           <button class="start-sidebar-item" onclick="openApp('settings')">
-            <i class="fa-solid fa-sliders text-violet"></i>
-            Settings
+            <i class="fa-solid fa-sliders text-violet"></i> Settings
           </button>
         </div>
-
         <div class="start-sidebar-actions">
           <button class="btn-start-action" id="btn-shutdown-os" title="Shut Down">
             <i class="fa-solid fa-power-off"></i>
@@ -201,118 +139,75 @@
             <i class="fa-solid fa-lock"></i>
           </button>
         </div>
-
       </div>
-
-      <!-- Right main panel -->
       <div class="start-menu-main">
-
         <div class="start-section-title">Applications</div>
-
         <div class="start-apps-grid">
-
           <div class="start-app-item" onclick="openApp('terminal')">
-            <span class="start-app-icon text-cyan">
-              <i class="fa-solid fa-terminal"></i>
-            </span>
+            <span class="start-app-icon text-cyan"><i class="fa-solid fa-terminal"></i></span>
             <div class="start-app-info">
               <span class="start-app-name">Cosmic Terminal</span>
               <span class="start-app-desc">Command-line interface</span>
             </div>
           </div>
-
           <div class="start-app-item" onclick="openApp('notes')">
-            <span class="start-app-icon text-violet">
-              <i class="fa-regular fa-clipboard"></i>
-            </span>
+            <span class="start-app-icon text-violet"><i class="fa-regular fa-clipboard"></i></span>
             <div class="start-app-info">
               <span class="start-app-name">Nebula Notes</span>
               <span class="start-app-desc">Write &amp; save notes</span>
             </div>
           </div>
-
           <div class="start-app-item" onclick="openApp('asteroids')">
-            <span class="start-app-icon text-orange">
-              <i class="fa-solid fa-meteor"></i>
-            </span>
+            <span class="start-app-icon text-orange"><i class="fa-solid fa-meteor"></i></span>
             <div class="start-app-info">
               <span class="start-app-name">Cosmic Asteroids</span>
               <span class="start-app-desc">Space shooter game</span>
             </div>
           </div>
-
           <div class="start-app-item" onclick="openApp('draw')">
-            <span class="start-app-icon text-pink">
-              <i class="fa-solid fa-wand-magic-sparkles"></i>
-            </span>
+            <span class="start-app-icon text-pink"><i class="fa-solid fa-wand-magic-sparkles"></i></span>
             <div class="start-app-info">
               <span class="start-app-name">Stellar Draw</span>
               <span class="start-app-desc">Digital paint canvas</span>
             </div>
           </div>
-
           <div class="start-app-item" onclick="openApp('explorer')">
-            <span class="start-app-icon text-green">
-              <i class="fa-solid fa-user-astronaut"></i>
-            </span>
+            <span class="start-app-icon text-green"><i class="fa-solid fa-user-astronaut"></i></span>
             <div class="start-app-info">
               <span class="start-app-name">Space Explorer</span>
               <span class="start-app-desc">System information</span>
             </div>
           </div>
-
           <div class="start-app-item" onclick="openApp('settings')">
-            <span class="start-app-icon text-gold">
-              <i class="fa-solid fa-sliders"></i>
-            </span>
+            <span class="start-app-icon text-gold"><i class="fa-solid fa-sliders"></i></span>
             <div class="start-app-info">
               <span class="start-app-name">Orion Control</span>
               <span class="start-app-desc">System settings</span>
             </div>
           </div>
-
         </div>
-
-        <!-- Simulated system stats -->
         <div class="start-system-stats">
           <div class="start-stat-item">
-            <span class="stat-lbl">
-              <i class="fa-solid fa-microchip"></i> CPU
-            </span>
-            <div class="stat-progress-bar">
-              <div id="cpu-loader" style="width: 10%;"></div>
-            </div>
+            <span class="stat-lbl"><i class="fa-solid fa-microchip"></i> CPU</span>
+            <div class="stat-progress-bar"><div id="cpu-loader" style="width:10%;"></div></div>
           </div>
           <div class="start-stat-item">
-            <span class="stat-lbl">
-              <i class="fa-solid fa-memory"></i> RAM
-            </span>
-            <div class="stat-progress-bar">
-              <div id="ram-loader" style="width: 38%;"></div>
-            </div>
+            <span class="stat-lbl"><i class="fa-solid fa-memory"></i> RAM</span>
+            <div class="stat-progress-bar"><div id="ram-loader" style="width:38%;"></div></div>
           </div>
         </div>
-
       </div>
-
     </div>
 
   </div>
-
-  <!--  4. Shutdown / Power Overlay  -->
+  <!-- 4. Shutdown Overlay -->
   <div id="shutdown-screen" class="system-overlay hidden">
     <div class="shutdown-content">
-      <div class="shutdown-icon-animate">
-        <i class="fa-solid fa-power-off"></i>
-      </div>
+      <div class="shutdown-icon-animate"><i class="fa-solid fa-power-off"></i></div>
       <h2 id="shutdown-text">Shutting down...</h2>
       <p>Please wait while Zenzei OS powers off.</p>
     </div>
   </div>
-
-  <!-- App logic -->
   <script src="app.js"></script>
-
 </body>
 </html>
-
