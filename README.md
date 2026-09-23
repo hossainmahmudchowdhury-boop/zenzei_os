@@ -3,17 +3,13 @@
 Zenzei OS is a sleek, lightweight, browser-based operating system simulation inspired by futuristic themed space interfaces.
 (^-^)
 It is built entirely with:
-# HTML5 
-# CSS3 
-# JavaScript
+* HTML5 
+* CSS3 
+* JavaScript
 
 ## Features
 
-* **Desktop Environment**: You get a custom window manager, a starfield background and special sound effects.
 
-* ** Starfield**: The starfield looks super realistic with moving stars and a cool glow.
-
-* **Glassmorphic Design**: The windows and menus look like glass and have a nice glow to them.
 
 ## What You Can Do
 
