@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zenzei Browser</title>
+<style>
+:root { color-scheme: dark; font-family: "Segoe UI", sans-serif; }
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; background: #101827; color: #eef6ff; }
+body { display: flex; flex-direction: column; overflow: hidden; }
+.toolbar { display: flex; gap: 8px; align-items: center; padding: 10px; background: #1c2c42; border-bottom: 1px solid #3c5875; }
+.toolbar button { width: 36px; height: 34px; border: 0; border-radius: 4px; background: #2b80b9; color: white; cursor: pointer; font-size: 16px; }
+.toolbar button:hover { background: #37a2df; }
+#address { flex: 1; min-width: 0; height: 34px; border: 1px solid #547493; border-radius: 4px; padding: 0 10px; background: #0c1422; color: white; font-size: 14px; }
+#status { padding: 6px 10px; background: #142238; color: #a9c5df; font-size: 12px; }
+#preview { flex: 1; width: 100%; border: 0; background: white; }
+.welcome { height: 100%; display: grid; place-items: center; padding: 32px; text-align: center; background: linear-gradient(135deg, #12243b, #24647c); }
+.welcome h1 { margin: 0 0 8px; font-size: 28px; }
+.welcome p { margin: 0; color: #c4d8e8; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button id="back" type="button" title="Back">&#8592;</button>
+  <button id="forward" type="button" title="Forward">&#8594;</button>
+  <input id="address" type="text" value="zenzei://home" aria-label="Address">
+  <button id="go" type="button" title="Go">&#9654;</button>
+</div>
+<div id="status">Ready</div>
+<div id="preview">
+  <div class="welcome"><div><h1>Zenzei Browser</h1><p>Enter a web address above to browse.</p></div></div>
+</div>
+<script>
+(function () {
+  var address = document.getElementById('address');
+  var status = document.getElementById('status');
+  var preview = document.getElementById('preview');
+  var history = [];
+  var historyIndex = -1;
+
+  function navigate(value, addHistory) {
+    var target = value.trim();
+    if (!target) return;
+    if (target === 'zenzei://home') {
+      preview.innerHTML = '<div class="welcome"><div><h1>Zenzei Browser</h1><p>Enter a web address above to browse.</p></div></div>';
+      status.textContent = 'Home';
+    } else {
+      if (!/^https?:\/\//i.test(target)) target = 'https://' + target;
+      var frame = document.createElement('iframe');
+      frame.id = 'webview';
+      frame.title = 'Web page preview';
+      frame.src = target;
+      frame.onload = function () { status.textContent = target; };
+      frame.onerror = function () { status.textContent = 'Unable to load ' + target; };
+      preview.replaceChildren(frame);
+      address.value = target;
+      status.textContent = 'Loading ' + target;
+    }
+    if (addHistory) {
+      history = history.slice(0, historyIndex + 1);
+      history.push(value.trim());
+      historyIndex = history.length - 1;
+    }
+  }
+
+  document.getElementById('go').onclick = function () { navigate(address.value, true); };
+  address.onkeydown = function (event) {
+    if (event.key === 'Enter') navigate(address.value, true);
+  };
+  document.getElementById('back').onclick = function () {
+    if (historyIndex > 0) { historyIndex--; address.value = history[historyIndex]; navigate(history[historyIndex], false); }
+  };
+  document.getElementById('forward').onclick = function () {
+    if (historyIndex < history.length - 1) { historyIndex++; address.value = history[historyIndex]; navigate(history[historyIndex], false); }
+  };
+}());
+</script>
+</body>
+</html>

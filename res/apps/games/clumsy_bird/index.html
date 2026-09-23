@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clumsy Bird</title>
+<style>
+html,body { height:100%; margin:0; overflow:hidden; background:#70c5ce; }
+body { display:grid; place-items:center; font-family:"Segoe UI",sans-serif; }
+#game { width:100%; height:100%; display:block; background:#70c5ce; }
+#message { position:fixed; top:18px; left:0; right:0; text-align:center; color:white; text-shadow:0 2px 2px #456; font-weight:700; pointer-events:none; }
+</style>
+</head>
+<body>
+<canvas id="game" aria-label="Clumsy Bird game"></canvas>
+<div id="message">Click or press Space to flap</div>
+<script>
+(function () {
+  var canvas = document.getElementById('game');
+  var ctx = canvas.getContext('2d');
+  var birdImage = new Image();
+  var pipeImage = new Image();
+  var groundImage = new Image();
+  var backgroundImage = new Image();
+  birdImage.src = '../../../assets/clumsy.png';
+  pipeImage.src = '../../../assets/pipe.png';
+  groundImage.src = '../../../assets/ground.png';
+  backgroundImage.src = '../../../assets/bg.png';
+  var bird, pipes, score, running, gameOver, lastTime;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  function reset() {
+    bird = { x: canvas.width * 0.25, y: canvas.height * 0.45, velocity: 0, size: 42 };
+    pipes = [];
+    score = 0;
+    running = true;
+    gameOver = false;
+    lastTime = performance.now();
+    document.getElementById('message').textContent = 'Click or press Space to flap';
+    requestAnimationFrame(loop);
+  }
+  function flap() {
+    if (gameOver) { reset(); return; }
+    bird.velocity = -330;
+  }
+  function addPipe() {
+    var gap = Math.max(115, canvas.height * 0.28);
+    var center = gap + Math.random() * Math.max(1, canvas.height - gap * 2 - 80);
+    pipes.push({ x: canvas.width + 30, width: 64, center: center, gap: gap, passed: false });
+  }
+  function endGame() {
+    gameOver = true;
+    running = false;
+    document.getElementById('message').textContent = 'Game over - click or press Space to restart';
+  }
+  function update(dt) {
+    bird.velocity += 900 * dt;
+    bird.y += bird.velocity * dt;
+    if (!pipes.length || pipes[pipes.length - 1].x < canvas.width - 240) addPipe();
+    pipes.forEach(function (pipe) {
+      pipe.x -= 180 * dt;
+      if (!pipe.passed && pipe.x + pipe.width < bird.x) { pipe.passed = true; score += 1; }
+      var hitX = bird.x + bird.size > pipe.x && bird.x < pipe.x + pipe.width;
+      var hitY = bird.y < pipe.center - pipe.gap / 2 || bird.y + bird.size > pipe.center + pipe.gap / 2;
+      if (hitX && hitY) endGame();
+    });
+    pipes = pipes.filter(function (pipe) { return pipe.x + pipe.width > -20; });
+    if (bird.y < 0 || bird.y + bird.size > canvas.height - 30) endGame();
+  }
+  function drawImageCover(image, x, y, width, height) {
+    if (image.complete && image.naturalWidth) ctx.drawImage(image, x, y, width, height);
+  }
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawImageCover(backgroundImage, 0, 0, canvas.width, canvas.height);
+    pipes.forEach(function (pipe) {
+      drawImageCover(pipeImage, pipe.x, pipe.center - pipe.gap / 2 - 320, pipe.width, 320);
+      drawImageCover(pipeImage, pipe.x, pipe.center + pipe.gap / 2, pipe.width, 320);
+    });
+    drawImageCover(groundImage, 0, canvas.height - 30, canvas.width, 30);
+    drawImageCover(birdImage, bird.x, bird.y, bird.size, bird.size);
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 28px Segoe UI';
+    ctx.textAlign = 'center';
+    ctx.fillText(score, canvas.width / 2, 48);
+  }
+  function loop(now) {
+    if (!running) { draw(); return; }
+    var dt = Math.min(0.035, (now - lastTime) / 1000);
+    lastTime = now;
+    update(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('keydown', function (event) { if (event.code === 'Space') { event.preventDefault(); flap(); } });
+  canvas.addEventListener('pointerdown', flap);
+  resize();
+  reset();
+}());
+</script>
+</body>
+</html>
